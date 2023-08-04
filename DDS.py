@@ -765,6 +765,21 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
     os.chdir(dir_path)
     os.system(terminnal_command)
 
+def isSameCalss(class1,class2):
+   splitClass1=''
+   splitClass2=class2.split(".")[0].strip() 
+   if "::" in class1:
+    dividedClassName =class1.split(":")
+    exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
+    splitClass1 =exsistBlankClassName[0].strip()
+   else:
+    dividedClassName =class1.split(".")
+    exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
+    splitClass1 =exsistBlankClassName[0].strip()
+   if splitClass1==splitClass2:
+       return True   
+   else:
+       return False 
 
         
 def main(file_path, output_file_name,isJavafile,deepParsing):
@@ -796,6 +811,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     
     count = 0
     count_ADS =0
+    count_ADS_Class=0
     startColumCorrectionValue = 0
     startColumCorrectionValue_ADS =0
     countClassName = 0
@@ -805,7 +821,10 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
         className = titles[countClassName]
         checkInterfaceClass=source_files[countClassName]
         create_class_name(ws, className=className,checkInterfaceClass=checkInterfaceClass)
-        create_class_name(ws_ADS, className=className,checkInterfaceClass=checkInterfaceClass)
+        if isSameCalss(class1=className,class2=checkInterfaceClass):
+            create_class_name(ws_ADS, className=className,checkInterfaceClass=checkInterfaceClass)
+            count_ADS_Class+=1
+
         countClassName += 1
         for splitData in data:
                 accessModifier =''
@@ -832,24 +851,27 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         count += 1
                         startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
 
-                    if "private" not in accessModifier:
-                        prototype = accessModifier + " " + creTable 
-                        start_row = 2 + count_ADS * 8 +  startColumCorrectionValue_ADS+countClassName
-                        saveParameter = toCharParamter(prototype=prototype)
-                        parameterColumCorrectionValue=len(saveParameter)-1  
-                        create_table_ADS(ws_ADS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
-                        count_ADS += 1
-                        startColumCorrectionValue_ADS+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게 
+                    if isSameCalss(class1=className,class2=checkInterfaceClass):    
+                        if "private" not in accessModifier:
+                            prototype = accessModifier + " " + creTable 
+                            start_row = 2 + count_ADS * 8 +  startColumCorrectionValue_ADS+count_ADS_Class
+                            saveParameter = toCharParamter(prototype=prototype)
+                            parameterColumCorrectionValue=len(saveParameter)-1  
+                            create_table_ADS(ws_ADS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                            count_ADS += 1
+                            startColumCorrectionValue_ADS+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게 
 
     root= Tk()
     root.withdraw()
 
-    msg.showinfo('made by antony', "클래스 총 갯수 : " +str(len(titles)) +"\n"+
+    msg.showinfo('made by antony', "DDS 클래스 총 갯수 : " +str(len(titles)) +"\n"+
                  "DDS 테이블 생성 갯수 :  "+str(count) +"\n"+
+                 "ADS 클래스 총 갯수 : " + str(count_ADS_Class)+"\n"
                  "ADS 테이블 생성 갯수 : "+str(count_ADS))
 
-    print("================================= 클래스 총 갯수       : "+str(len(titles))+"     =================================")
+    print("================================= DDS 클래스 총 갯수(inner포함): "+str(len(titles))+"     =================================")
     print("================================= DDS 테이블 생성 갯수 : "+str(count)+"     =================================")
+    print("\n================================= ADS 클래스 총 갯수 : "+str(count_ADS_Class)+"     =================================")    
     print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
     print("                                    made by antony                                         ")
     os.system("pause")
@@ -938,8 +960,10 @@ if __name__ == "__main__":
     # 인터페이스는 두가지 종류가 존재해 
         # 1. 진짜 파일이 인터페이스파일 -> 클래스와 구분이 안되니 구분필요 (Interface) 인터페이스명 (해결)
         # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스:: 메소드명 이건 좀 힘드네 ;;;
-            #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서 이건 클래스 OK!
-        # 3... ADS의 경우는,, 이너 클래스 인터페이스 안한듯;
+            #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서 (해결)
+        # 3... ADS의 경우는,, 이너 클래스 인터페이스 안한듯;(해결 !
+        # )
             #3-1 이경우에는 ... 안맞으면 그냥 패스하는걸로;;; ;
+
 #예외처리 생각하기
 #번외 GUI
