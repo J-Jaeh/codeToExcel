@@ -613,22 +613,33 @@ def create_class_name(ws,className,checkInterfaceClass):
     exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
     realClassName =exsistBlankClassName[0]
     if "인터페이스" in exsistBlankClassName[1]:
-        if realClassName==checkName:
-            realClassName="(Interface) " + exsistBlankClassName[0]     
-    ws.append({'A':realClassName})
+        if realClassName==checkName:            
+            interfaceName="(Interface) " + exsistBlankClassName[0]         
+            ws.append({'A':interfaceName})
+        else:
+            ws.append({'A':realClassName})
+    else:#클래스겠지 
+        if realClassName==checkName:  
+          ws.append({'A':realClassName})
+        else:
+            innerClassName=checkName+" :: "+realClassName
+            ws.append({'A':innerClassName})    
    else:
     dividedClassName =className.split(".")
     exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
     realClassName =exsistBlankClassName[0]
     if "인터페이스" in exsistBlankClassName[1]:
-        if realClassName==checkName:
-            
+        if realClassName==checkName:            
             interfaceName="(Interface) " + exsistBlankClassName[0]         
             ws.append({'A':interfaceName})
         else:
-            ws.append({'A':realClassName})
+             ws.append({'A':realClassName})  
     else:
-          ws.append({'A':realClassName})
+        if realClassName==checkName:  
+            ws.append({'A':realClassName})
+        else:
+            innerClassName=checkName+" :: "+realClassName
+            ws.append({'A':innerClassName})  
 
 def getFileNameInDrectory(output_file_name):
     if "\\" in output_file_name or "/" in output_file_name:
@@ -927,7 +938,7 @@ if __name__ == "__main__":
     # 인터페이스는 두가지 종류가 존재해 
         # 1. 진짜 파일이 인터페이스파일 -> 클래스와 구분이 안되니 구분필요 (Interface) 인터페이스명 (해결)
         # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스:: 메소드명 이건 좀 힘드네 ;;;
-            #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서
+            #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서 이건 클래스 OK!
         # 3... ADS의 경우는,, 이너 클래스 인터페이스 안한듯;
             #3-1 이경우에는 ... 안맞으면 그냥 패스하는걸로;;; ;
 #예외처리 생각하기
