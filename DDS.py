@@ -437,9 +437,9 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
                         end_row=correctionColum, 
                         end_column=ParameterDescription_Value_End_Culum)    
        
-            ws.cell(Parameter_Element_Value_Row,ParameterDataType_Value_Culum).value = parameterDataType # 파라미터 데이터 타입 위에서 index더해주니까 여기선 적용된 상태니 상관 없지
-            ws.cell(Parameter_Element_Value_Row,ParameterName_Value_Culum).value = saveParameter[index].split(" ")[len(saveParameter[index].split(" "))-1] # 파라미터 이름
-            ws.cell(Parameter_Element_Value_Row,ParameterInOrOut_Value_Culum).value = "IN"
+            ws.cell(correctionColum,ParameterDataType_Value_Culum).value = parameterDataType # 파라미터 데이터 타입 위에서 index더해주니까 여기선 적용된 상태니 상관 없지
+            ws.cell(correctionColum,ParameterName_Value_Culum).value = saveParameter[index].split(" ")[len(saveParameter[index].split(" "))-1] # 파라미터 이름
+            ws.cell(correctionColum,ParameterInOrOut_Value_Culum).value = "IN"
 
             ws.cell(correctionColum,ParameterDataType_Value_Culum).alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
             ws.cell(correctionColum,ParameterName_Value_Culum).alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
