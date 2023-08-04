@@ -81,7 +81,19 @@ def toCharParamter(prototype):
     saveParameter.append(para)            
     return saveParameter
     
-def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
+def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,className,checkInterfaceName):
+    #------------------innerClass 보정작업----------------------
+    correctionMethodName=''
+    if isSameCalss(class1=className,class2=checkInterfaceName)==False and "인터페이스" in className:    
+        if "::" in className:
+                dividedClassName =className.split(":")
+                exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
+                correctionMethodName =exsistBlankClassName[0].strip()
+        else:
+                dividedClassName =className.split(".")
+                exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
+                correctionMethodName =exsistBlankClassName[0].strip()+" :: "
+
     #-----------------------------------컬럼 보정작업을 생각해보자---------
     orginalPrototype = prototype.replace("정적",'').strip() # 정적 ~ 한글 제거
 
@@ -149,7 +161,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
     #---------------------------------------------------------------------------
 
     #---------------------파싱값 할당--------------------------------------------
-    ws[f'E{start_row+1}']= unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
+    ws[f'E{start_row+1}']=correctionMethodName+unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
 
 
 
@@ -257,7 +269,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
         for cell in rows:
             cell.border = border
 
-def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
+def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue): 
     #-----------------------------------컬럼 보정작업을 생각해보자---------
     orginalPrototype = prototype.replace("정적",'').strip() # 정적 ~ 한글 제거
 
@@ -601,8 +613,6 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
     for rows in ws.iter_rows(min_row=start_row, max_row=start_row+parameterColumCorrectionValue + 6, min_col=5, max_col=42):
         for cell in rows:
             cell.border = border
-
-
 def create_class_name(ws,className,checkInterfaceClass):  
    ws.append([None])
 
@@ -617,7 +627,7 @@ def create_class_name(ws,className,checkInterfaceClass):
             interfaceName="(Interface) " + exsistBlankClassName[0]         
             ws.append({'A':interfaceName})
         else:
-            ws.append({'A':realClassName})
+            ws.append({'A':checkName})
     else:#클래스겠지 
         if realClassName==checkName:  
           ws.append({'A':realClassName})
@@ -633,7 +643,7 @@ def create_class_name(ws,className,checkInterfaceClass):
             interfaceName="(Interface) " + exsistBlankClassName[0]         
             ws.append({'A':interfaceName})
         else:
-             ws.append({'A':realClassName})  
+             ws.append({'A':checkName})  
     else:
         if realClassName==checkName:  
             ws.append({'A':realClassName})
@@ -821,6 +831,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
         className = titles[countClassName]
         checkInterfaceClass=source_files[countClassName]
         create_class_name(ws, className=className,checkInterfaceClass=checkInterfaceClass)
+
         if isSameCalss(class1=className,class2=checkInterfaceClass):
             create_class_name(ws_ADS, className=className,checkInterfaceClass=checkInterfaceClass)
             count_ADS_Class+=1
@@ -847,7 +858,8 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         start_row = 2 + count * 14 +  startColumCorrectionValue+countClassName
                         saveParameter = toCharParamter(prototype=prototype)
                         parameterColumCorrectionValue=len(saveParameter)-1  
-                        create_table_DDS(ws, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                        create_table_DDS(ws, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue
+                                         ,className=className,checkInterfaceName=checkInterfaceClass)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
                         count += 1
                         startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
 
@@ -959,7 +971,7 @@ if __name__ == "__main__":
  # 현재상황 인터페이스
     # 인터페이스는 두가지 종류가 존재해 
         # 1. 진짜 파일이 인터페이스파일 -> 클래스와 구분이 안되니 구분필요 (Interface) 인터페이스명 (해결)
-        # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스:: 메소드명 이건 좀 힘드네 ;;;
+        # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스:: 메소드명 이건 좀 힘드네 ;;;(해결)
             #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서 (해결)
         # 3... ADS의 경우는,, 이너 클래스 인터페이스 안한듯;(해결 !
         # )
