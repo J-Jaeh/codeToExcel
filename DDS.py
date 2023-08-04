@@ -653,11 +653,11 @@ def create_class_name(ws,className,checkInterfaceClass):
 
 def getFileNameInDrectory(output_file_name):
     if "\\" in output_file_name or "/" in output_file_name:
-        if "\\" in output_file_name:
-            split_output_file_name = output_file_name.split("\\")
+        if "\\" in output_file_name:          
+            split_output_file_name = output_file_name.replace("/","\\").split("\\")
             return split_output_file_name[len(split_output_file_name)-1]
         else:
-            split_output_file_name = output_file_name.split("/")   
+            split_output_file_name = output_file_name.replace("\\","/").split("/")   
             return split_output_file_name[len(split_output_file_name)-1]
     else:
         return output_file_name
