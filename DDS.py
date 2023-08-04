@@ -97,6 +97,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
     #----------------------------------------------------------------------
 
     #------------------------------------기본 테이블 설정값이다!--------------
+
     ws[f'A{start_row-1}'].font = Font(name='Arial', size=20, bold=True)
     ws[f'B{start_row}'] = 'Software Unit Information'
     ws[f'B{start_row + 1}'] = 'Unit ID'
@@ -113,6 +114,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
  
 
     #------------컬럼 보정작업을 하고 병합을하고 병합한 셀에 값을 추가해줘야 오류가 없다 !-----
+
     ws.merge_cells(f'B{start_row}:G{start_row}') #Software Unit Information
     ws.merge_cells(f'C{start_row+2}:G{start_row+2}') # 프로토타입 들어갈 공간 즉 파싱 값이 들어갈 자리
     ws.merge_cells(f'B{start_row+3}:B{start_row+4+parameterColumCorrectionValue}') #Parameter
@@ -147,7 +149,10 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue):
     #---------------------------------------------------------------------------
 
     #---------------------파싱값 할당--------------------------------------------
-    ws[f'E{start_row+1}']= unitNameList[unitNameIndex-1]  #unitName 이다
+    ws[f'E{start_row+1}']= unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
+
+
+
     ws[f'C{start_row+2}']= orginalPrototype   #prototype 이다 !
 
     if ">" in allParameterValue:
@@ -617,7 +622,7 @@ def create_class_name(ws,className,checkInterfaceClass):
     realClassName =exsistBlankClassName[0]
     if "인터페이스" in exsistBlankClassName[1]:
         if realClassName==checkName:
-            print("여기 들어오긴 하냐 하냐하냐하냐하냫나햔햔하냐하냐한얌리ㅏㄴㅁ어리;ㅏㄴ어란엄리ㅏㄴㅇ리ㅏ;ㄴㅇ;리ㅏㄴㅇ라ㅣㅇ란ㅁㄹㄹ")
+            
             interfaceName="(Interface) " + exsistBlankClassName[0]         
             ws.append({'A':interfaceName})
         else:
@@ -920,8 +925,10 @@ if __name__ == "__main__":
 #인터페이스 구분기능이 있었으며 좋겠다라는 생각을 하는중
  # 현재상황 인터페이스
     # 인터페이스는 두가지 종류가 존재해 
-        # 1. 진짜 파일이 인터페이스파일 -> 클래스와 구분이 안되니 구분필요 (Interface) 인터페이스명
-        # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스 or 클래스명 :: 메소드명
-
+        # 1. 진짜 파일이 인터페이스파일 -> 클래스와 구분이 안되니 구분필요 (Interface) 인터페이스명 (해결)
+        # 2. 클래스 안에 정의한 인터페이스or 인터페이스->  인터페이스:: 메소드명 이건 좀 힘드네 ;;;
+            #2-1 클래스의 경우는 아마... 해당 이너클래스 :: 클래스명 이걸로 했음.. 이유는 여러 클래스에서 중복되게 정의해놓아서
+        # 3... ADS의 경우는,, 이너 클래스 인터페이스 안한듯;
+            #3-1 이경우에는 ... 안맞으면 그냥 패스하는걸로;;; ;
 #예외처리 생각하기
 #번외 GUI
