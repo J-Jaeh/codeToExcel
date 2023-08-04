@@ -173,7 +173,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             parameterDataType=''
             for combindParameterDataTypeIndex in range(0,len(saveParameter[index].split(" "))-1): # 목적 파라미터 이름 빼고 앞에 있는걸 획득하기 위함 ; 보통 0 1 로 끝나겠지
                 parameterDataType+=saveParameter[index].split(" ")[combindParameterDataTypeIndex]  # 이렇게 해주면 되자나 
-            ws[f'C{start_row+4+index}'] = parameterDataType # 파라미터 데이터 타입
+            ws[f'C{start_row+4+index}'] = parameterDataType.strip() # 파라미터 데이터 타입
             ws[f'D{start_row+4+index}'] = saveParameter[index].split(" ")[len(saveParameter[index].split(" "))-1] # 파라미터 이름
             ws[f'F{start_row+4+index}'] = "IN"
             ws[f'C{start_row+4+index}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
@@ -192,7 +192,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
                 dataType=''
                 for index in range(0,len(parameter)-1):
                     dataType+=parameter[index]+" "
-                ws[f'C{start_row+4}'] = dataType # 파라미터 데이터 타입
+                ws[f'C{start_row+4}'] = dataType.strip()  # 파라미터 데이터 타입
                 ws[f'D{start_row+4}'] = parameter[len(parameter)-1] # 파라미터 이름
                 ws[f'F{start_row+4}'] = "IN"
             else: # 이제 파라미터 값이 여러개 오는 짜증나는 경우다 // 일단 여러줄 만드는거 성공했자나 ;; 이제 값만 잘 넣어주면된다...
@@ -202,7 +202,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
                     dataType=''
                     for index in range(0,len(parameter)-1):
                         dataType+=parameter[index]+" "
-                    ws[f'C{start_row+4+parameterColum}'] = dataType # 파라미터 데이터 타입
+                    ws[f'C{start_row+4+parameterColum}'] = dataType.strip()  # 파라미터 데이터 타입
                     ws[f'D{start_row+4+parameterColum}'] = parameter[len(parameter)-1] # 파라미터 이름
                     ws[f'F{start_row+4+parameterColum}'] = "IN"
                     ws[f'C{start_row+4+parameterColum}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
@@ -220,7 +220,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             ws[f'D{start_row+6+parameterColumCorrectionValue}'] = "-"
             ws[f'F{start_row+6+parameterColumCorrectionValue}'] = "-"
         else:
-            ws[f'C{start_row+6+parameterColumCorrectionValue}'] = unitNameList[unitNameIndex-2] # 반환형!
+            ws[f'C{start_row+6+parameterColumCorrectionValue}'] = unitNameList[unitNameIndex-2].strip()  # 반환형!
     elif unitNameIndex > 3:
         if "void" in orginalPrototype:
             ws[f'C{start_row+6+parameterColumCorrectionValue}'] = "-"  
@@ -230,7 +230,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             returnValue=''
             for unitIndex in range(1,unitNameIndex-1):
                 returnValue +=unitNameList[unitIndex]+" "
-            ws[f'C{start_row+6+parameterColumCorrectionValue}']=returnValue
+            ws[f'C{start_row+6+parameterColumCorrectionValue}']=returnValue.strip() 
 
 
     #---------------------------------------------------------------------------
@@ -566,9 +566,9 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
             ws[ReturnValuePossibleReturnValue_Value_Cell] = "-"
             ws[RetrunValueDescription_Value_Cell] = "-"
         else:
-            ws[ReturnValueDataType_Value_Cell] = unitNameList[unitNameIndex-2] # 반환형!
+            ws[ReturnValueDataType_Value_Cell] = unitNameList[unitNameIndex-2].strip() # 반환형!
     elif unitNameIndex > 3:
-        if "void" in orginalPrototype:
+        if "void" in orginalPrototype :
             ws[ReturnValueDataType_Value_Cell] = "-"   
             ws[ReturnValuePossibleReturnValue_Value_Cell] = "-"
             ws[RetrunValueDescription_Value_Cell] = "-"
@@ -576,7 +576,7 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
             returnValue=''
             for unitIndex in range(1,unitNameIndex-1):
                 returnValue +=unitNameList[unitIndex]+" "
-            ws[ReturnValueDataType_Value_Cell]=returnValue
+            ws[ReturnValueDataType_Value_Cell]=returnValue.strip()
 
 
     #---------------------------------------------------------------------------
@@ -586,9 +586,6 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
     # 열 크기 지정
     for col in range(5,43):
         ws.column_dimensions[get_column_letter(col)].width = 8.1 * 1.09
-
-
-    
     # 색 및 글자 폰트
     col_color = [InterfaceName_Cell,Prototype_Cell,Description_Cell,Parameter_Cell,ReturnValue_Cell,
                  ParameterDataType_Cell,ParameterName_Cell,ParameterRange_Cell,ParameterInOrOut_Cell,ParameterDescription_Cell,
