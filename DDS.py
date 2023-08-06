@@ -11,8 +11,6 @@ from tkinter import Tk
 from tkinter import messagebox as msg
 import shutil
 
-
-
 def find_tables_with_methods(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
@@ -822,6 +820,8 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     startColumCorrectionValue = 0
     startColumCorrectionValue_ADS =0
     countClassName = 0
+
+    packageCount=0   # 패키지 함수 카운트하는거 얼마나 많은 종류가 있나일단 확인 ;; 
     ws = wb.active
     ws_ADS = wb_ADS.active
     for data in table_texts:
@@ -846,10 +846,15 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         if accessModifier =="정적":
                             accessModifier = creTable.split(' ')[1].lower()
                         continue
+                    if "패키지" in creTable:
+                        packageCount+=1
+
                     if ")" not in creTable:
                         continue
                     if "(으)로부터" in accessModifier:
                         continue
+                    
+
                     if accessModifier or not accessModifier: # 접근제어자가 존재하지 않을 수도 있다는 사실이 존재함 ............
                         prototype = accessModifier + " " + creTable 
                         start_row = 2 + count * 14 +  startColumCorrectionValue+countClassName
@@ -883,6 +888,11 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     print("\n================================= ADS 클래스 총 갯수 : "+str(count_ADS_Class)+"     =================================")    
     print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
     print("                                    made by antony                                         ")
+    
+    wb.save(f'{output_file_name}_DDS.xlsx')
+    wb_ADS.save(f'{output_file_name}_ADS.xlsx')
+
+    print("패키지함수 갯수 "+str(packageCount))
     os.system("pause")
 
     # print(len(table_texts))
@@ -892,8 +902,6 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     # for index in range(0,len(titles)):
     #     print(f"\n{titles[index]}         vs        "+f'{source_files[index]}\n')
 
-    wb.save(f'{output_file_name}_DDS.xlsx')
-    wb_ADS.save(f'{output_file_name}_ADS.xlsx')
 
 
 if __name__ == "__main__":
