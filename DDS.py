@@ -10,6 +10,11 @@ import tkinter as tk
 from tkinter import Tk
 from tkinter import messagebox as msg
 import shutil
+import datetime
+
+
+
+curentTime =datetime.datetime.now().strftime("%Y.%m.%d_%Hh.%Mm.%Ss")
 
 def find_tables_with_methods(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -702,9 +707,15 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
 
     # output_file_name / or \ 있다면 파일경로가 포함된 저장폴더 이름이니까 스플릿하고 아니면 그대로 반환     
     file_end_name=getFileNameInDrectory(output_file_name)
+   
+    real_file_path=''
+    if "\\" in output_file_name or "/" in output_file_name:
+        real_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
+    else:
+        real_file_path =f'{dir_path}/HTML_{file_end_name}_{curentTime}'
 
     #만약에 동일 이름의 파일이 존재하면 파일을 삭제하고 다시만드는 과정을 추가 
-    real_file_path =f'{dir_path}/HTML_{file_end_name}'
+    
     isSameFileExist=os.path.exists(real_file_path)    
     if isSameFileExist:
         print("기존에 존재하는 파일을 삭제하고 다시 생성합니다")
@@ -758,7 +769,7 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
     config['CLASS_GRAPH']['CLASS_GRAPH'] = 'NO'
 
     # 설정 파일로 저장
-    file_path = f'{dir_path}/configuration'
+    file_path = f'{output_file_name}/configuration'
     with open(file_path, 'w') as configfile:
         for section, options in config.items():
             #configfile.write(f'[{section}]\n')
@@ -768,7 +779,8 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
 
     # cmd 로 저장된 파일 실행 
     terminnal_command ='doxygen configuration'
-    os.chdir(dir_path)
+
+    os.chdir(output_file_name)
     os.system(terminnal_command)
 
 def isSameCalss(class1,class2):
@@ -792,13 +804,18 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     create_html_file(file_path,isJavafile,deepParsing,output_file_name)
 
     print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
+
     table_texts = []
     titles = []
     source_files=[]
+    file_end_name=getFileNameInDrectory(output_file_name=output_file_name) 
+    html_file_path=''
+    if "\\" in output_file_name or "/" in output_file_name:
+        html_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
+    else:
+        html_file_path =f'{file_path}/HTML_{file_end_name}_{curentTime}'
 
-    file_end_name=getFileNameInDrectory(output_file_name) 
-    html_file_path=f'{file_path}/HTML_{file_end_name}'
-    for (root, files) in os.walk(html_file_path):
+    for (root,directories,files) in os.walk(html_file_path):
         for file in files:
             if '.html' in file:
                 html_file_path = os.path.join(root, file) 
@@ -813,7 +830,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     # 새 워크북 생성 및 활성 시트 선택
     wb = Workbook()
     wb_ADS = Workbook()
-    
+     
     count = 0
     count_ADS =0
     count_ADS_Class=0
@@ -889,8 +906,9 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
     print("                                    made by antony                                         ")
 
-    wb.save(f'{output_file_name}_DDS.xlsx')
-    wb_ADS.save(f'{output_file_name}_ADS.xlsx')
+    file_end_name=getFileNameInDrectory(file_path) 
+    wb.save(f'{output_file_name}/{file_end_name}_DDS_{curentTime}.xlsx')
+    wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
 
     print("패키지함수 갯수 "+str(packageCount))
     os.system("pause")
@@ -910,7 +928,7 @@ if __name__ == "__main__":
 
     print("********************************************************************************************")
     print("        저장할 경로를 명시하지 않는 다면 소스파일이 있는 디렉토리에 생성됩니다   ")
-    print("        생성될 엑셀 파일의 [저장 파일 이름] 또는 [저장경로\저장파일 이름]을 입력하세요 :    ") 
+    print("        생성될 엑셀파일의 저장경로를 입력해주세요 :    ") 
     print("********************************************************************************************")
     output_file_name = input()
 
