@@ -13,6 +13,21 @@ import shutil
 import datetime
 
 
+
+def sepcialCaseReturnValue(preReturnValue):
+     if "private" in preReturnValue or "public" in preReturnValue or "protected" in preReturnValue:  # 이분기는 .. " 접근제어자< " 이렇게 나오는 버그를 잡는 분기.
+            listPreReturnValue=list(preReturnValue)
+            isReturnValueStart=False
+            returnValue=''
+            for charReturnValue in listPreReturnValue:
+                if charReturnValue=="<":
+                    isReturnValueStart=True
+                if isReturnValueStart:
+                    returnValue+=charReturnValue  #이러면 .......... 잠깐;;; 이름까지 다 들어가자나 ㅡㅡ 유닛네임으,로 해 ㅜㅜ     
+            return  returnValue
+     else: # 위에가 아니라면 ~ 단순히 접근수준 제어자가 없는 디폴트 패키지라는 뜻이자나 ~ 그럼   
+            return preReturnValue
+
 def find_tables_with_methods(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
@@ -81,7 +96,7 @@ def toCharParamter(prototype):
     saveParameter.append(para)            
     return saveParameter
     
-def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,className,checkInterfaceName):
+def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,className,checkInterfaceName,sepcialCase):
     #------------------innerClass 보정작업----------------------
     correctionMethodName=''
     if isSameCalss(class1=className,class2=checkInterfaceName)==False and "인터페이스" in className:    
@@ -163,8 +178,6 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
     #---------------------파싱값 할당--------------------------------------------
     ws[f'E{start_row+1}']=correctionMethodName+unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
 
-
-
     ws[f'C{start_row+2}']= orginalPrototype   #prototype 이다 !
 
     if ">" in allParameterValue:
@@ -231,8 +244,9 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             for unitIndex in range(1,unitNameIndex-1):
                 returnValue +=unitNameList[unitIndex]+" "
             ws[f'C{start_row+6+parameterColumCorrectionValue}']=returnValue.strip() 
-
-
+    if sepcialCase:
+       preReturnValue=prototype.split(unitNameList[unitNameIndex-1])[0]
+       ws[f'C{start_row+6+parameterColumCorrectionValue}']=sepcialCaseReturnValue(preReturnValue) 
     #---------------------------------------------------------------------------
     #---------------------------------------------------------------------------
 
@@ -848,6 +862,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
             count_ADS_Class+=1
 
         countClassName += 1
+        specialCase=False
         for splitData in data:
                 accessModifier =''
                 for creTable in splitData.split("\n"):
@@ -862,6 +877,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         continue
                     if "패키지" in creTable:
                         packageCount+=1
+                        specialCase=True
                         print(splitData)
 
                     if ")" not in creTable:
@@ -876,7 +892,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         saveParameter = toCharParamter(prototype=prototype)
                         parameterColumCorrectionValue=len(saveParameter)-1  
                         create_table_DDS(ws, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue
-                                         ,className=className,checkInterfaceName=checkInterfaceClass)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                                         ,className=className,checkInterfaceName=checkInterfaceClass,sepcialCase=specialCase)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
                         count += 1
                         startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
 
