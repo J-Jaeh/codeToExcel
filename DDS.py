@@ -24,7 +24,6 @@ def find_tables_with_methods(file_path):
 
     return filtered_tables
 
-
 def find_title_text(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
@@ -51,6 +50,7 @@ def find_source_file(file_path):
         
         # "a" 태그의 클래스 이름이 "el"인 태그가 없는 경우 None을 반환합니다.
         return ""
+
 def toCharParamter(prototype):
     orginalPrototype = prototype.replace("정적",'').strip() # 정적 ~ 한글 제거
     allParameterValue=re.search(r'\(\s*(.*?)\s*\)', orginalPrototype).group(1)
@@ -608,6 +608,7 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
     for rows in ws.iter_rows(min_row=start_row, max_row=start_row+parameterColumCorrectionValue + 6, min_col=5, max_col=42):
         for cell in rows:
             cell.border = border
+
 def create_class_name(ws,className,checkInterfaceClass):  
    ws.append([None])
 
@@ -786,7 +787,6 @@ def isSameCalss(class1,class2):
    else:
        return False 
 
-        
 def main(file_path, output_file_name,isJavafile,deepParsing):
 
     create_html_file(file_path,isJavafile,deepParsing,output_file_name)
@@ -798,18 +798,18 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
 
     file_end_name=getFileNameInDrectory(output_file_name) 
     html_file_path=f'{file_path}/HTML_{file_end_name}'
-    for (root, directories, files) in os.walk(html_file_path):
+    for (root, files) in os.walk(html_file_path):
         for file in files:
             if '.html' in file:
-                html_file_path = os.path.join(root, file)
-                # print(file_path)
+                html_file_path = os.path.join(root, file) 
                 tables = find_tables_with_methods(html_file_path)
                 title_text = find_title_text(html_file_path)
                 source_file = find_source_file(html_file_path)
                 if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
                     table_texts.append([table.get_text() for table in tables])
                     titles.append(title_text)
-                    source_files.append(source_file)    
+                    source_files.append(source_file)  
+
     # 새 워크북 생성 및 활성 시트 선택
     wb = Workbook()
     wb_ADS = Workbook()
@@ -875,20 +875,20 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                             count_ADS += 1
                             startColumCorrectionValue_ADS+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게 
 
-    root= Tk()
-    root.withdraw()
+    # root= Tk()
+    # root.withdraw()
 
-    msg.showinfo('made by antony', "DDS 클래스 총 갯수 : " +str(len(titles)) +"\n"+
-                 "DDS 테이블 생성 갯수 :  "+str(count) +"\n"+
-                 "ADS 클래스 총 갯수 : " + str(count_ADS_Class)+"\n"
-                 "ADS 테이블 생성 갯수 : "+str(count_ADS))
+    # msg.showinfo('made by antony', "DDS 클래스 총 갯수 : " +str(len(titles)) +"\n"+
+    #              "DDS 테이블 생성 갯수 :  "+str(count) +"\n"+
+    #              "ADS 클래스 총 갯수 : " + str(count_ADS_Class)+"\n"
+    #              "ADS 테이블 생성 갯수 : "+str(count_ADS))
 
     print("================================= DDS 클래스 총 갯수(inner포함): "+str(len(titles))+"     =================================")
     print("================================= DDS 테이블 생성 갯수 : "+str(count)+"     =================================")
     print("\n================================= ADS 클래스 총 갯수 : "+str(count_ADS_Class)+"     =================================")    
     print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
     print("                                    made by antony                                         ")
-    
+
     wb.save(f'{output_file_name}_DDS.xlsx')
     wb_ADS.save(f'{output_file_name}_ADS.xlsx')
 
@@ -901,8 +901,6 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
 
     # for index in range(0,len(titles)):
     #     print(f"\n{titles[index]}         vs        "+f'{source_files[index]}\n')
-
-
 
 if __name__ == "__main__":
     print("*************파일경로에 띄어쓰기나 한글이 적혀있으면 경로를 인식을 못합니다*************")
