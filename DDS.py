@@ -862,9 +862,10 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
             count_ADS_Class+=1
 
         countClassName += 1
-        specialCase=False
+        
         for splitData in data:
                 accessModifier =''
+                specialCase=False
                 for creTable in splitData.split("\n"):
                     creTable = creTable.strip()  # 앞뒤 공백 제거
                     creTable = creTable.strip().replace('\xa0', ' ') # 짜증나는 녀석 제거
