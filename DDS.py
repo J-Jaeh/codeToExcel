@@ -808,7 +808,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     table_texts = []
     titles = []
     source_files=[]
-    file_end_name=getFileNameInDrectory(output_file_name=output_file_name) 
+    file_end_name=getFileNameInDrectory(output_file_name=file_path) 
     html_file_path=''
     if "\\" in output_file_name or "/" in output_file_name:
         html_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
