@@ -13,9 +13,6 @@ import shutil
 import datetime
 
 
-
-
-
 def find_tables_with_methods(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
@@ -865,6 +862,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         continue
                     if "패키지" in creTable:
                         packageCount+=1
+                        print(splitData)
 
                     if ")" not in creTable:
                         continue
@@ -883,7 +881,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                         startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
 
                     if isSameCalss(class1=className,class2=checkInterfaceClass):    
-                        if "private" not in accessModifier:
+                        if "private" not in accessModifier and "private" not in creTable:
                             prototype = accessModifier + " " + creTable 
                             start_row = 2 + count_ADS * 8 +  startColumCorrectionValue_ADS+count_ADS_Class
                             saveParameter = toCharParamter(prototype=prototype)
@@ -930,7 +928,6 @@ while(True):
 
 
         print("********************************************************************************************")
-        print("        저장할 경로를 명시하지 않는 다면 소스파일이 있는 디렉토리에 생성됩니다   ")
         print("        생성될 엑셀파일의 저장경로를 입력해주세요 :    ") 
         print("********************************************************************************************")
         output_file_name = input()
