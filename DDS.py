@@ -706,7 +706,7 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
         print(e)    
 
     # output_file_name / or \ 있다면 파일경로가 포함된 저장폴더 이름이니까 스플릿하고 아니면 그대로 반환     
-    file_end_name=getFileNameInDrectory(output_file_name)
+    file_end_name=getFileNameInDrectory(dir_path)
    
     real_file_path=''
     if "\\" in output_file_name or "/" in output_file_name:
