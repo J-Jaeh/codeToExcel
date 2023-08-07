@@ -14,7 +14,7 @@ import datetime
 
 
 
-curentTime =datetime.datetime.now().strftime("%Y.%m.%d_%Hh.%Mm.%Ss")
+
 
 def find_tables_with_methods(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -920,59 +920,81 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
     # for index in range(0,len(titles)):
     #     print(f"\n{titles[index]}         vs        "+f'{source_files[index]}\n')
 
-if __name__ == "__main__":
-    print("*************파일경로에 띄어쓰기나 한글이 적혀있으면 경로를 인식을 못합니다*************")
-    print("파일 경로를 입력하세요:")
-    file_path = input()
+while(True):
+    if __name__ == "__main__":
+        curentTime =datetime.datetime.now().strftime("%Y.%m.%d_%Hh.%Mm.%Ss")
+        
+        print("*************파일경로에 띄어쓰기나 한글이 적혀있으면 경로를 인식을 못합니다*************")
+        print("파일 경로를 입력하세요:")
+        file_path = input()
 
 
-    print("********************************************************************************************")
-    print("        저장할 경로를 명시하지 않는 다면 소스파일이 있는 디렉토리에 생성됩니다   ")
-    print("        생성될 엑셀파일의 저장경로를 입력해주세요 :    ") 
-    print("********************************************************************************************")
-    output_file_name = input()
+        print("********************************************************************************************")
+        print("        저장할 경로를 명시하지 않는 다면 소스파일이 있는 디렉토리에 생성됩니다   ")
+        print("        생성될 엑셀파일의 저장경로를 입력해주세요 :    ") 
+        print("********************************************************************************************")
+        output_file_name = input()
 
-    countIsJavaInputTry = 0
-    while(True):
-        print("자바파일 인가요?(Y/N)")
-        isJavafile=input()
-        try:
-            if isJavafile.lower() in ["y", "n","yes","no"]:
+        countIsJavaInputTry = 0
+        while(True):
+            print("자바파일 인가요?(Y/N)")
+            isJavafile=input()
+            try:
+                if isJavafile.lower() in ["y", "n","yes","no"]:
+                    break
+                elif countIsJavaInputTry==5:
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    os.system("pause")
+                    sys.exit(1)                     
+                else:    
+                    raise Exception("\n\nY or N 을 입력해주세요")        
+            except Exception as e:
+                countIsJavaInputTry+=1
+                print(e)    
+        
+        countDeepParsingInputTry =0
+        while(True):
+            print("깊은 탐색을 해서 하위 폴더의 html까지 파싱하고 싶으신가요?(Y/N)")
+            deepParsing=input()
+            try:
+                if deepParsing.lower() in ["y", "n","yes","no"]:
+                    break
+                elif countDeepParsingInputTry==5:
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
+                    os.system("pause")
+                    sys.exit(1)                   
+                else:
+                    raise Exception("\n\nY or N 을 입력해주세요 - antony")
+            except Exception as e:
+                countDeepParsingInputTry+=1
+                print(e)
+            
+        main(file_path, output_file_name,isJavafile,deepParsing)
+
+        print("작업을 계속해서 하시겠습니까?(Y/N)")
+
+        isContinue=''
+        while(True):
+            continueWork=input()
+            if continueWork.lower() in ["y", "n","yes","no"]:
+                isContinue=continueWork
                 break
-            elif countIsJavaInputTry==5:
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                os.system("pause")
-                sys.exit(1)                     
-            else:    
-                raise Exception("\n\nY or N 을 입력해주세요")        
-        except Exception as e:
-            countIsJavaInputTry+=1
-            print(e)    
-    
-    countDeepParsingInputTry =0
-    while(True):
-        print("깊은 탐색을 해서 하위 폴더의 html까지 파싱하고 싶으신가요?(Y/N)")
-        deepParsing=input()
-        try:
-            if deepParsing.lower() in ["y", "n","yes","no"]:
-                break
-            elif countDeepParsingInputTry==5:
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
-                os.system("pause")
-                sys.exit(1)                   
             else:
-                raise Exception("\n\nY or N 을 입력해주세요 - antony")
-        except Exception as e:
-            countDeepParsingInputTry+=1
-            print(e)
-           
-    main(file_path, output_file_name,isJavafile,deepParsing)
+                print("똑바로 입력하세요")
+                continue
+        if isContinue in ["y","yes"]:
+            continue
+        else:
+            break
+
+
+
 
 #1. 엑셀 저장 경로를 추가해주자(해결)    
 #2. html 긁어오는건 생성되는 html파일기준으로 하기 ..(해결)
