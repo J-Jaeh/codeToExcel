@@ -923,7 +923,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
 while(True):
     if __name__ == "__main__":
         curentTime =datetime.datetime.now().strftime("%Y.%m.%d_%Hh.%Mm.%Ss")
-        
+
         print("*************파일경로에 띄어쓰기나 한글이 적혀있으면 경로를 인식을 못합니다*************")
         print("파일 경로를 입력하세요:")
         file_path = input()
@@ -957,7 +957,7 @@ while(True):
         
         countDeepParsingInputTry =0
         while(True):
-            print("깊은 탐색을 해서 하위 폴더의 html까지 파싱하고 싶으신가요?(Y/N)")
+            print("깊은 탐색을 해서 하위 폴더의 html까지 파싱하고 싶으신가요?(Y/N)\n 깊은탐색은 버그가 많이 발생하니 되도록이면 N 을 추천 드립니다.")
             deepParsing=input()
             try:
                 if deepParsing.lower() in ["y", "n","yes","no"]:
@@ -986,7 +986,7 @@ while(True):
                 isContinue=continueWork
                 break
             else:
-                print("똑바로 입력하세요")
+                print("똑바로 입력하세요\n\n작업을 계속해서 하시겠습니까?(Y/N)")
                 continue
         if isContinue in ["y","yes"]:
             continue
