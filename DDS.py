@@ -283,7 +283,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
         for cell in rows:
             cell.border = border
 
-def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue): 
+def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue,sepcialCase): 
     #-----------------------------------컬럼 보정작업을 생각해보자---------
     orginalPrototype = prototype.replace("정적",'').strip() # 정적 ~ 한글 제거
 
@@ -592,6 +592,9 @@ def create_table_ADS(ws, start_row,prototype,parameterColumCorrectionValue):
                 returnValue +=unitNameList[unitIndex]+" "
             ws[ReturnValueDataType_Value_Cell]=returnValue.strip()
 
+    if sepcialCase:
+       preReturnValue=prototype.split(unitNameList[unitNameIndex-1])[0]
+       ws[ReturnValueDataType_Value_Cell]=sepcialCaseReturnValue(preReturnValue) 
 
     #---------------------------------------------------------------------------
     #---------------------------------------------------------------------------
@@ -862,7 +865,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
             count_ADS_Class+=1
 
         countClassName += 1
-        
+
         for splitData in data:
                 accessModifier =''
                 specialCase=False
