@@ -96,9 +96,157 @@ def toCharParamter(prototype):
     saveParameter.append(para)            
     return saveParameter
     
+def makeMergeRange(start,end):
+    return start+":"+end
+def makeMergeCell(ws,mergeRanges):
+    for mergeRange in mergeRanges:
+        ws.merge_cells(mergeRange)
+
 def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,className,checkInterfaceName,sepcialCase):
+    ##==================cell 값 할당=========================================================
+    #-------------------row명칭 할당---------------------"_INPUT_"은 값이 들어가는셀-----------
+    TABLE_START_ROW = start_row
+    PARAMETER_CORRECTION_COLUM_ROW = parameterColumCorrectionValue
+    
+    CLASS_NAME_ROW = TABLE_START_ROW-1
+    UNIT_ROW = TABLE_START_ROW+1
+    
+    PROTOTYPE_ROW = TABLE_START_ROW + 2
+
+    PARAMETER_ROW = TABLE_START_ROW + 3
+    PARAMETER_INPUT_ROW = PARAMETER_ROW+1
+    PARAMETER_INPUT_LAST_ROW=PARAMETER_INPUT_ROW+PARAMETER_CORRECTION_COLUM_ROW
+
+    RETURN_VALUE_ROW = TABLE_START_ROW+5+PARAMETER_CORRECTION_COLUM_ROW
+    RETURN_VALUE_INPUT_ROW = RETURN_VALUE_ROW+1
+
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW=TABLE_START_ROW+7+PARAMETER_CORRECTION_COLUM_ROW
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_INPUT_ROW=IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW+1
+
+    DESCRIPTION_ROW=TABLE_START_ROW+9+PARAMETER_CORRECTION_COLUM_ROW
+    CALLED_FUNCTION_ROW=TABLE_START_ROW+10+PARAMETER_CORRECTION_COLUM_ROW
+    CALLING_FUNCTION_ROW=TABLE_START_ROW+11+PARAMETER_CORRECTION_COLUM_ROW
+    DYNAMIC_VIEW_DESIGN_ROW=TABLE_START_ROW+12+PARAMETER_CORRECTION_COLUM_ROW
+
+    ###--------------talbe 기본 골격 만드는 값 할당-------------
+    #
+    CLASS_NAME_CELL=f'A{CLASS_NAME_ROW}'
+    #
+    SOFTWARE_UNIT_INFORMATION_CELL=f'B{TABLE_START_ROW}'
+    #
+    UNIT_ID_CELL=f'B{UNIT_ROW}'
+    UNIT_NAME_CELL=f'D{UNIT_ROW}'
+    ASIL_CELL=f'F{UNIT_ROW}'
+    #
+    PROTOTYPE_CELL=f'B{PROTOTYPE_ROW}'
+    #
+    PARAMETER_CELL=f'B{PARAMETER_ROW}'
+    PARAMETER_DATA_TYPE_CELL=f'C{PARAMETER_ROW}'
+    PARAMETER_NAME_CELL=f'D{PARAMETER_ROW}'
+    PARAMETER_RAGNE_CELL=f'E{PARAMETER_ROW}'
+    IN_OUT_CELL=f'F{PARAMETER_ROW}'
+    PARAMETER_DESCRIPTION_CELL=f'G{PARAMETER_ROW}'
+    #
+    RETURN_VALUE_CELL=f'B{RETURN_VALUE_ROW}'
+    RETURN_VALUE_DATA_TYPE_CELL=f'C{RETURN_VALUE_ROW}'
+    POSSIBLE_RETURN_VALUE_CELL=f'D{RETURN_VALUE_ROW}'
+    RETURN_VALUE_DESCRIPTION_CELL=f'F{RETURN_VALUE_ROW}'
+    #
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_CELL=f'B{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_DATA_TYPE_CELL=f'C{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_NAME_CELL=f'D{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_RANGE_CELL=f'E{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+    READ_WRITE_CELL=f'F{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_DESCRIPTION_CELL=f'G{IMPORTED_CLASS_OR_GLOBAL_VALUE_ROW}'
+
+    DESCRIPTION_CELL=f'B{DESCRIPTION_ROW}'
+    CALLED_FUNCTION_CELL=f'B{CALLED_FUNCTION_ROW}'
+    CALLING_FUNCTION_CELL=f'B{CALLING_FUNCTION_ROW}'
+    DYNAMIC_VIEW_DESIGN_CELL=f'B{DYNAMIC_VIEW_DESIGN_ROW}'
+    ###-------------------------------------------------------
+    ###-----------------INPUT값이 들어가는 셀 정의--------------
+    UNIT_NAME_INPUT_CELL=f'E{UNIT_ROW}'
+    ASIL_INPUT_CELL=f'G{UNIT_ROW}'
+
+    PROTOTYPE_INPUT_CELL=f'C{PROTOTYPE_ROW}'
+    
+    READ_WIRTE_INPUT_CELL=f'F{IMPORTED_CLASS_OR_GLOBAL_VALUE_INPUT_ROW}'
+
+    RETURN_VALUE_DATA_TYPE_INPUT_CELL=f'C{RETURN_VALUE_INPUT_ROW}'
+    POSSIBLE_RETURN_VALUE_INPUT_CELL=f'D{RETURN_VALUE_INPUT_ROW}'
+    RETURN_VALUE_DESCRIPTION_INPUT_CELL=f'F{RETURN_VALUE_INPUT_ROW}'
+
+    DESCRIPTION_INPUT_CELL=f'C{DESCRIPTION_ROW}'
+    CALLED_FUNCTION_INPUT_CELL=f'C{CALLED_FUNCTION_ROW}'
+    CALLING_FUNCTION_INPUT_CELL=f'C{CALLING_FUNCTION_ROW}'
+    DYNAMIC_VIEW_DESIGN_INPUT_CELL=f'C{DYNAMIC_VIEW_DESIGN_ROW}'
+
+    ###----------------------병합셀 범위 의미 전달을 위한 이름 치환
+    SOFTWARE_UNIT_INFORMATION_MERGE_START=SOFTWARE_UNIT_INFORMATION_CELL
+    SOFTWARE_UNIT_INFORMATION_MERGE_END=f'G{TABLE_START_ROW}'
+    #
+    PROTOTYPE_INPUT_MERGE_START=PROTOTYPE_INPUT_CELL
+    PROTOTYPE_INPUT_MERGE_END=f'G{PROTOTYPE_ROW}'
+    #
+    PARAMETER_MERGE_START=PARAMETER_CELL
+    PARAMETER_MERGE_END=f'B{PARAMETER_INPUT_LAST_ROW}'
+    #
+    RETURN_VALUE_MERGE_START=RETURN_VALUE_CELL
+    RETURN_VALUE_MERGE_END=f'B{RETURN_VALUE_INPUT_ROW}'
+    #
+    POSSIBLE_RETURN_VALUE_MERGE_START=POSSIBLE_RETURN_VALUE_CELL
+    POSSIBLE_RETURN_VALUE_MERGE_END=f'E{RETURN_VALUE_ROW}'
+    #
+    POSSIBLE_RETURN_VALUE_INPUT_MERGE_START=POSSIBLE_RETURN_VALUE_INPUT_CELL
+    POSSIBLE_RETURN_VALUE_INPUT_MERGE_END=f'E{RETURN_VALUE_INPUT_ROW}'
+    #
+    RETURN_VALUE_DESCRIPTION_MERGE_START=RETURN_VALUE_DESCRIPTION_CELL
+    RETURN_VALUE_DESCRIPTION_MERGE_END=f'G{RETURN_VALUE_ROW}'
+    #
+    RETURN_VALUE_DESCRIPTION_INPUT_MERGE_START=RETURN_VALUE_DESCRIPTION_INPUT_CELL
+    RETURN_VALUE_DESCRIPTION_INPUT_MERGE_END=f'G{RETURN_VALUE_INPUT_ROW}'
+    #
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_START=IMPORTED_CLASS_OR_GLOBAL_VALUE_CELL
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_END=f'B{IMPORTED_CLASS_OR_GLOBAL_VALUE_INPUT_ROW}'
+    #
+    DESCRIPTION_INPUT_MERGE_START=DESCRIPTION_INPUT_CELL
+    DESCRIPTION_INPUT_MERGE_END=f'G{DESCRIPTION_ROW}'
+    #
+    CALLED_FUNCTION_INPUT_MERGE_START=CALLED_FUNCTION_INPUT_CELL
+    CALLED_FUNCTION_INPUT_MERGE_END=f'G{CALLED_FUNCTION_ROW}'
+    #
+    CALLING_FUNCTION_INPUT_MERGE_START=CALLING_FUNCTION_INPUT_CELL
+    CALLING_FUNCTION_INPUT_MERGE_END=f'G{CALLING_FUNCTION_ROW}'
+    #
+    DYNAMIC_VIEW_DESIGN_INPUT_MERGE_START=DYNAMIC_VIEW_DESIGN_INPUT_CELL
+    DYNAMIC_VIEW_DESIGN_INPUT_MERGE_END=f'G{DYNAMIC_VIEW_DESIGN_ROW}'
+
+    ###--------------------병합할 영역을 정하는 값----------
+    SOFTWARE_UNIT_INFORMATION_MERGE_RANGE=makeMergeRange(start=SOFTWARE_UNIT_INFORMATION_MERGE_START , end=SOFTWARE_UNIT_INFORMATION_MERGE_END)
+
+    PROTOTYPE_INPUT_MERGE_RANGE=makeMergeRange(start=PROTOTYPE_INPUT_MERGE_START , end=PROTOTYPE_INPUT_MERGE_END)
+
+    PARAMETER_MERGE_RANGE=makeMergeRange(start=PARAMETER_MERGE_START ,end= PARAMETER_MERGE_END)
+
+    RETURN_VALUE_MERGE_RANGE=makeMergeRange(start=RETURN_VALUE_MERGE_START , end=RETURN_VALUE_MERGE_END)
+
+    POSSIBLE_RETURN_VALUE_MERGE_RANGE=makeMergeRange(start=POSSIBLE_RETURN_VALUE_MERGE_START ,end= POSSIBLE_RETURN_VALUE_MERGE_END)
+    POSSIBLE_RETURN_VALUE_INPUT_MERGE_RANGE=makeMergeRange(start=POSSIBLE_RETURN_VALUE_INPUT_MERGE_START , end=POSSIBLE_RETURN_VALUE_INPUT_MERGE_END)
+
+    RETURN_VALUE_DESCRIPTION_MERGE_RANGE=makeMergeRange(start=RETURN_VALUE_DESCRIPTION_MERGE_START , end=RETURN_VALUE_DESCRIPTION_MERGE_END)
+    RETURN_VALUE_DESCRIPTION_INPUT_MERGE_RANGE=makeMergeRange(start=RETURN_VALUE_DESCRIPTION_INPUT_MERGE_START ,end= RETURN_VALUE_DESCRIPTION_INPUT_MERGE_END)
+
+    IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_RANGE=makeMergeRange(start=IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_START ,end= IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_END)
+
+    DESCRIPTION_INPUT_MERGE_RANGE=makeMergeRange(start=DESCRIPTION_INPUT_MERGE_START ,end= DESCRIPTION_INPUT_MERGE_END)
+    CALLED_FUNCTION_INPUT_MERGE_RANGE=makeMergeRange(start=CALLED_FUNCTION_INPUT_MERGE_START,end=CALLED_FUNCTION_INPUT_MERGE_END)
+    CALLING_FUNCTION_INPUT_MERGE_RANGE=makeMergeRange(start=CALLING_FUNCTION_INPUT_MERGE_START, end=CALLING_FUNCTION_INPUT_MERGE_END)
+    DYNAMIC_VIEW_DESIGN_INPUT_MERGE_RANGE=makeMergeRange(start=DYNAMIC_VIEW_DESIGN_INPUT_MERGE_START, end=DYNAMIC_VIEW_DESIGN_INPUT_MERGE_END)
+    ##=======================================================================================
+    
     #------------------innerClass 보정작업----------------------
     correctionMethodName=''
+    #*****이거 if 내부는 함수로 뺄 수 있을 듯 하자!
     if isSameCalss(class1=className,class2=checkInterfaceName)==False and "인터페이스" in className:    
         if "::" in className:
                 dividedClassName =className.split(":")
@@ -109,7 +257,8 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
                 exsistBlankClassName=dividedClassName[len(dividedClassName)-1].split(" ")
                 correctionMethodName =exsistBlankClassName[0].strip()+" :: "
 
-    #-----------------------------------컬럼 보정작업을 생각해보자---------
+
+    #-----------------------------------필요한 프로토 타입들 추출과정 + 파라미터 행늘리는 과정 ---------
     orginalPrototype = prototype.replace("정적",'').strip() # 정적 ~ 한글 제거
 
     dividedPrototype =orginalPrototype.split('(') # "(" 기준으로 split
@@ -120,65 +269,56 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
     allParameterValue=re.search(r'\(\s*(.*?)\s*\)', orginalPrototype).group(1)
     parameterList = allParameterValue.split(",")
     
-    ws.insert_rows(start_row+4,parameterColumCorrectionValue)
+    ws.insert_rows(PARAMETER_INPUT_LAST_ROW)
     #----------------------------------------------------------------------
 
     #------------------------------------기본 테이블 설정값이다!--------------
 
-    ws[f'A{start_row-1}'].font = Font(name='Arial', size=20, bold=True)
-    ws[f'B{start_row}'] = 'Software Unit Information'
-    ws[f'B{start_row + 1}'] = 'Unit ID'
-    ws[f'D{start_row + 1}'] = 'Unit Name'
-    ws[f'F{start_row + 1}'] = 'ASIL'
-    ws[f'G{start_row + 1}'] = 'QM'
-    ws[f'B{start_row + 2}'] = 'Prototype'
-    ws[f'B{start_row + 3}'] = 'Parameter'
-    ws[f'C{start_row + 3}'] = 'Data Type'
-    ws[f'D{start_row + 3}'] = 'Name'
-    ws[f'E{start_row + 3}'] = 'Range'
-    ws[f'F{start_row + 3}'] = 'IN/OUT'
-    ws[f'G{start_row + 3}'] = 'Description'
+    ws[CLASS_NAME_CELL].font = Font(name='Arial', size=20, bold=True)
+    ws[SOFTWARE_UNIT_INFORMATION_CELL] = 'Software Unit Information'
+    ws[UNIT_ID_CELL] = 'Unit ID'
+    ws[UNIT_NAME_CELL] = 'Unit Name'
+    ws[ASIL_CELL] = 'ASIL'
+    ws[ASIL_INPUT_CELL] = 'QM'
+    ws[PROTOTYPE_CELL] = 'Prototype'
+    ws[PARAMETER_CELL] = 'Parameter'
+    ws[PARAMETER_DATA_TYPE_CELL] = 'Data Type'
+    ws[PARAMETER_NAME_CELL] = 'Name'
+    ws[PARAMETER_RAGNE_CELL] = 'Range'
+    ws[IN_OUT_CELL] = 'IN/OUT'
+    ws[PARAMETER_DESCRIPTION_CELL] = 'Description'
  
 
-    #------------컬럼 보정작업을 하고 병합을하고 병합한 셀에 값을 추가해줘야 오류가 없다 !-----
+    #------------셀병합!----------------------------------------------------------------------
+    mergeRanges=[SOFTWARE_UNIT_INFORMATION_MERGE_RANGE, PROTOTYPE_INPUT_MERGE_RANGE, PARAMETER_MERGE_RANGE, RETURN_VALUE_MERGE_RANGE,
+                POSSIBLE_RETURN_VALUE_MERGE_RANGE, POSSIBLE_RETURN_VALUE_INPUT_MERGE_RANGE, RETURN_VALUE_DESCRIPTION_MERGE_RANGE,RETURN_VALUE_DESCRIPTION_INPUT_MERGE_RANGE,
+                IMPORTED_CLASS_OR_GLOBAL_VALUE_MERGE_RANGE, DESCRIPTION_INPUT_MERGE_RANGE, CALLED_FUNCTION_INPUT_MERGE_RANGE, CALLING_FUNCTION_INPUT_MERGE_RANGE, DYNAMIC_VIEW_DESIGN_INPUT_MERGE_RANGE]
 
-    ws.merge_cells(f'B{start_row}:G{start_row}') #Software Unit Information
-    ws.merge_cells(f'C{start_row+2}:G{start_row+2}') # 프로토타입 들어갈 공간 즉 파싱 값이 들어갈 자리
-    ws.merge_cells(f'B{start_row+3}:B{start_row+4+parameterColumCorrectionValue}') #Parameter
-    ws.merge_cells(f'B{start_row+parameterColumCorrectionValue+5}:B{start_row+parameterColumCorrectionValue+6}') #Return Value
-    ws.merge_cells(f'D{start_row+parameterColumCorrectionValue+5}:E{start_row+parameterColumCorrectionValue+5}') #Possible Return Value
-    ws.merge_cells(f'F{start_row+parameterColumCorrectionValue+5}:G{start_row+parameterColumCorrectionValue+5}') #Description
-    ws.merge_cells(f'D{start_row+parameterColumCorrectionValue+6}:E{start_row+parameterColumCorrectionValue+6}') #Possible Return Value 값이 들어갈 공간
-    ws.merge_cells(f'F{start_row+6+parameterColumCorrectionValue}:G{start_row+6+parameterColumCorrectionValue}') #Description에 대한 설명이 들어갈 공간
-    ws.merge_cells(f'B{start_row+7+parameterColumCorrectionValue}:B{start_row+8+parameterColumCorrectionValue}') #Imported Class or Global Value
-    ws.merge_cells(f'C{start_row+9+parameterColumCorrectionValue}:G{start_row+9+parameterColumCorrectionValue}') #메소드에 대한 Description에 대한 내용이 들어간 공간
-    ws.merge_cells(f'C{start_row+10+parameterColumCorrectionValue}:G{start_row+10+parameterColumCorrectionValue}') #Called Function 내용이 들어갈 공간
-    ws.merge_cells(f'C{start_row+11+parameterColumCorrectionValue}:G{start_row+11+parameterColumCorrectionValue}') #calling Function 내용이 들어갈 공간
-    ws.merge_cells(f'C{start_row+12+parameterColumCorrectionValue}:G{start_row+12+parameterColumCorrectionValue}')
-
-
-    ws[f'B{start_row + 5+parameterColumCorrectionValue}'] = 'Return Value'
-    ws[f'C{start_row + 5+parameterColumCorrectionValue}'] = 'Data Type'
-    ws[f'D{start_row + 5+parameterColumCorrectionValue}'] = 'Possible Return Value'
-    ws[f'F{start_row + 5+parameterColumCorrectionValue}'] = 'Description'
+    makeMergeCell(ws=ws,mergeRanges=mergeRanges)
+    #----------------------------------------------------------------------------------------
+    #-------------- 테이블 기본 골격 생성----------------------------------------------------------
+    ws[RETURN_VALUE_CELL] = 'Return Value'
+    ws[RETURN_VALUE_DATA_TYPE_CELL] = 'Data Type'
+    ws[POSSIBLE_RETURN_VALUE_CELL] = 'Possible Return Value'
+    ws[RETURN_VALUE_DESCRIPTION_CELL] = 'Description'
     
-    ws[f'B{start_row + 7+parameterColumCorrectionValue}'] = 'Imported Class or Global Value'
-    ws[f'C{start_row + 7+parameterColumCorrectionValue}'] = 'Data Type'
-    ws[f'D{start_row + 7+parameterColumCorrectionValue}'] = 'Name'
-    ws[f'E{start_row + 7+parameterColumCorrectionValue}'] = 'Range'
-    ws[f'F{start_row + 7+parameterColumCorrectionValue}'] = 'Read/Write'
-    ws[f'G{start_row + 7+parameterColumCorrectionValue}'] = 'Description'
-    ws[f'F{start_row + 8+parameterColumCorrectionValue}'] = '-' # 이건 배경색 안들어감  Read/Write를 적는칸
-    ws[f'B{start_row + 9+parameterColumCorrectionValue}'] = 'Description'
-    ws[f'B{start_row + 10+parameterColumCorrectionValue}'] = 'Called Function'
-    ws[f'B{start_row + 11+parameterColumCorrectionValue}'] = 'Calling Function'
-    ws[f'B{start_row + 12+parameterColumCorrectionValue}'] = 'Dynamic View Design\r(Control Flow Diagram)'
+    ws[IMPORTED_CLASS_OR_GLOBAL_VALUE_CELL] = 'Imported Class or Global Value'
+    ws[IMPORTED_CLASS_OR_GLOBAL_VALUE_DATA_TYPE_CELL] = 'Data Type'
+    ws[IMPORTED_CLASS_OR_GLOBAL_VALUE_NAME_CELL] = 'Name'
+    ws[IMPORTED_CLASS_OR_GLOBAL_VALUE_RANGE_CELL] = 'Range'
+    ws[READ_WRITE_CELL] = 'Read/Write'
+    ws[IMPORTED_CLASS_OR_GLOBAL_VALUE_DESCRIPTION_CELL] = 'Description'
+
+    ws[READ_WIRTE_INPUT_CELL] = '-' # 이건 배경색 안들어감  Read/Write를 적는칸
+    ws[DESCRIPTION_CELL] = 'Description'
+    ws[CALLED_FUNCTION_CELL] = 'Called Function'
+    ws[CALLING_FUNCTION_CELL] = 'Calling Function'
+    ws[DYNAMIC_VIEW_DESIGN_CELL] = 'Dynamic View Design\r(Control Flow Diagram)'
     #---------------------------------------------------------------------------
 
     #---------------------파싱값 할당--------------------------------------------
-    ws[f'E{start_row+1}']=correctionMethodName+unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
-
-    ws[f'C{start_row+2}']= orginalPrototype   #prototype 이다 !
+    ws[UNIT_NAME_INPUT_CELL]=correctionMethodName+unitNameList[unitNameIndex-1]  #unitName 이다 후... 여기를 바꿔야함 ;;; 미쳤다리 ,,,,,,,,,
+    ws[PROTOTYPE_INPUT_CELL]= orginalPrototype   #prototype 이다 !
 
     if ">" in allParameterValue:
         saveParameter = toCharParamter(prototype=prototype)   
@@ -186,28 +326,35 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             parameterDataType=''
             for combindParameterDataTypeIndex in range(0,len(saveParameter[index].split(" "))-1): # 목적 파라미터 이름 빼고 앞에 있는걸 획득하기 위함 ; 보통 0 1 로 끝나겠지
                 parameterDataType+=saveParameter[index].split(" ")[combindParameterDataTypeIndex]  # 이렇게 해주면 되자나 
-            ws[f'C{start_row+4+index}'] = parameterDataType.strip() # 파라미터 데이터 타입
-            ws[f'D{start_row+4+index}'] = saveParameter[index].split(" ")[len(saveParameter[index].split(" "))-1] # 파라미터 이름
-            ws[f'F{start_row+4+index}'] = "IN"
-            ws[f'C{start_row+4+index}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
-            ws[f'D{start_row+4+index}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
-            ws[f'F{start_row+4+index}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)        
+            addParameterRow = PARAMETER_INPUT_ROW+index
+            ws[f'C{addParameterRow}'] = parameterDataType.strip() # 파라미터 데이터 타입
+            ws[f'D{addParameterRow}'] = saveParameter[index].split(" ")[len(saveParameter[index].split(" "))-1] # 파라미터 이름
+            ws[f'F{addParameterRow}'] = "IN"
+            ws[f'C{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
+            ws[f'D{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+            ws[f'F{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)        
     else :
         for param in parameterList:
             if not param:
-                ws[f'C{start_row+4}'] ='-'
-                ws[f'D{start_row+4}'] ='-'
-                ws[f'E{start_row+4}'] ='-'
-                ws[f'F{start_row+4}'] ='-'
-                ws[f'G{start_row+4}'] ='-'
+                ws[f'C{PARAMETER_INPUT_ROW}'] ='-'
+                ws[f'D{PARAMETER_INPUT_ROW}'] ='-'
+                ws[f'E{PARAMETER_INPUT_ROW}'] ='-'
+                ws[f'F{PARAMETER_INPUT_ROW}'] ='-'
+                ws[f'G{PARAMETER_INPUT_ROW}'] ='-'
+                ws[f'C{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
+                ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+                ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)                
             elif len(parameterList) ==1:
                 parameter = allParameterValue.split(' ')
                 dataType=''
                 for index in range(0,len(parameter)-1):
                     dataType+=parameter[index]+" "
-                ws[f'C{start_row+4}'] = dataType.strip()  # 파라미터 데이터 타입
-                ws[f'D{start_row+4}'] = parameter[len(parameter)-1] # 파라미터 이름
-                ws[f'F{start_row+4}'] = "IN"
+                ws[f'C{PARAMETER_INPUT_ROW}'] = dataType.strip()  # 파라미터 데이터 타입
+                ws[f'D{PARAMETER_INPUT_ROW}'] = parameter[len(parameter)-1] # 파라미터 이름
+                ws[f'F{PARAMETER_INPUT_ROW}'] = "IN"
+                ws[f'C{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
+                ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+                ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
             else: # 이제 파라미터 값이 여러개 오는 짜증나는 경우다 // 일단 여러줄 만드는거 성공했자나 ;; 이제 값만 잘 넣어주면된다...
                 # for문 이용해서 행값 조절 좀 해줘야 할듯 ?
                 for parameterColum in range(0,parameterColumCorrectionValue+1):
@@ -215,71 +362,73 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
                     dataType=''
                     for index in range(0,len(parameter)-1):
                         dataType+=parameter[index]+" "
-                    ws[f'C{start_row+4+parameterColum}'] = dataType.strip()  # 파라미터 데이터 타입
-                    ws[f'D{start_row+4+parameterColum}'] = parameter[len(parameter)-1] # 파라미터 이름
-                    ws[f'F{start_row+4+parameterColum}'] = "IN"
-                    ws[f'C{start_row+4+parameterColum}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
-                    ws[f'D{start_row+4+parameterColum}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
-                    ws[f'F{start_row+4+parameterColum}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+                    addParameterRow = PARAMETER_INPUT_ROW+parameterColum    
+                    ws[f'C{addParameterRow}'] = dataType.strip()  # 파라미터 데이터 타입
+                    ws[f'D{addParameterRow}'] = parameter[len(parameter)-1] # 파라미터 이름
+                    ws[f'F{addParameterRow}'] = "IN"
+                    ws[f'C{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
+                    ws[f'D{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+                    ws[f'F{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
 
     # ----------------적절한 반환형을 주입시키는 분기------------------------------
     if unitNameIndex == 2:
-        ws[f'C{start_row+6+parameterColumCorrectionValue}'] = "-"   
-        ws[f'D{start_row+6+parameterColumCorrectionValue}'] = "-"
-        ws[f'F{start_row+6+parameterColumCorrectionValue}'] = "-"
+        ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL] = "-"   
+        ws[POSSIBLE_RETURN_VALUE_INPUT_CELL] = "-"
+        ws[RETURN_VALUE_DESCRIPTION_INPUT_CELL] = "-"
     elif unitNameIndex == 3:
         if unitNameList[unitNameIndex-2] == "void" or unitNameList[unitNameIndex-2] == "virtual" :
-            ws[f'C{start_row+6+parameterColumCorrectionValue}'] = "-"  
-            ws[f'D{start_row+6+parameterColumCorrectionValue}'] = "-"
-            ws[f'F{start_row+6+parameterColumCorrectionValue}'] = "-"
+            ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL] = "-"  
+            ws[POSSIBLE_RETURN_VALUE_INPUT_CELL] = "-"
+            ws[RETURN_VALUE_DESCRIPTION_INPUT_CELL] = "-"
         else:
-            ws[f'C{start_row+6+parameterColumCorrectionValue}'] = unitNameList[unitNameIndex-2].strip()  # 반환형!
+            ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL] = unitNameList[unitNameIndex-2].strip()  # 반환형!
     elif unitNameIndex > 3:
         if "void" in orginalPrototype:
-            ws[f'C{start_row+6+parameterColumCorrectionValue}'] = "-"  
-            ws[f'D{start_row+6+parameterColumCorrectionValue}'] = "-"
-            ws[f'F{start_row+6+parameterColumCorrectionValue}'] = "-"
+            ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL] = "-"  
+            ws[POSSIBLE_RETURN_VALUE_INPUT_CELL] = "-"
+            ws[RETURN_VALUE_DESCRIPTION_INPUT_CELL] = "-"
         else:    
             returnValue=''
             for unitIndex in range(1,unitNameIndex-1):
                 returnValue +=unitNameList[unitIndex]+" "
-            ws[f'C{start_row+6+parameterColumCorrectionValue}']=returnValue.strip() 
+            ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL]=returnValue.strip() 
     if sepcialCase:
        preReturnValue=prototype.split(unitNameList[unitNameIndex-1])[0]
-       ws[f'C{start_row+6+parameterColumCorrectionValue}']=sepcialCaseReturnValue(preReturnValue) 
+       ws[RETURN_VALUE_DATA_TYPE_INPUT_CELL]=sepcialCaseReturnValue(preReturnValue) 
     #---------------------------------------------------------------------------
     #---------------------------------------------------------------------------
-
-
     # 열 크기 지정
     col_widths = {"B": 20, "C": 30, "D": 30, "E": 30, "F": 30, "G": 30}
     for col_name in col_widths:
         ws.column_dimensions[col_name].width = col_widths[col_name]
 
-    ws.row_dimensions[start_row + 12+parameterColumCorrectionValue].height = 400
+    ws.row_dimensions[DYNAMIC_VIEW_DESIGN_ROW].height = 400
     # 색 및 글자 폰트
-    col_color = [f'B{start_row}', f'B{start_row + 1}', f'D{start_row + 1}', f'F{start_row + 1}', f'B{start_row + 2}', 
-                 f'B{start_row + 3}', f'C{start_row + 3}', f'D{start_row + 3}', f'E{start_row + 3}', f'F{start_row + 3}', 
-                 f'G{start_row + 3}', f'B{start_row + 5+parameterColumCorrectionValue}', f'C{start_row + 5+parameterColumCorrectionValue}', f'D{start_row + 5+parameterColumCorrectionValue}', f'F{start_row + 5+parameterColumCorrectionValue}', 
-                 f'B{start_row + 7+parameterColumCorrectionValue}', f'C{start_row + 7+parameterColumCorrectionValue}', f'D{start_row + 7+parameterColumCorrectionValue}', f'E{start_row + 7+parameterColumCorrectionValue}', f'F{start_row + 7+parameterColumCorrectionValue}', 
-                 f'G{start_row + 7+parameterColumCorrectionValue}', f'B{start_row + 9+parameterColumCorrectionValue}', f'B{start_row + 10+parameterColumCorrectionValue}', f'B{start_row + 11+parameterColumCorrectionValue}', f'B{start_row + 12+parameterColumCorrectionValue}']
+    col_color = [SOFTWARE_UNIT_INFORMATION_CELL,UNIT_ID_CELL, UNIT_NAME_CELL, ASIL_CELL, PROTOTYPE_CELL, 
+                 PARAMETER_CELL, PARAMETER_DATA_TYPE_CELL, PARAMETER_NAME_CELL, PARAMETER_RAGNE_CELL, IN_OUT_CELL, 
+                 PARAMETER_DESCRIPTION_CELL, RETURN_VALUE_CELL, RETURN_VALUE_DATA_TYPE_CELL, POSSIBLE_RETURN_VALUE_CELL,RETURN_VALUE_DESCRIPTION_CELL, 
+                 IMPORTED_CLASS_OR_GLOBAL_VALUE_CELL,IMPORTED_CLASS_OR_GLOBAL_VALUE_DATA_TYPE_CELL,IMPORTED_CLASS_OR_GLOBAL_VALUE_NAME_CELL,IMPORTED_CLASS_OR_GLOBAL_VALUE_RANGE_CELL,
+                 READ_WRITE_CELL,IMPORTED_CLASS_OR_GLOBAL_VALUE_DESCRIPTION_CELL,DESCRIPTION_CELL,CALLED_FUNCTION_CELL,CALLING_FUNCTION_CELL,DYNAMIC_VIEW_DESIGN_CELL]
+    
     for cell in col_color:
         ws[cell].fill = PatternFill(patternType="solid", fgColor='BFBFBF')
         ws[cell].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
-        if cell == f'B{start_row}':
+        if cell == SOFTWARE_UNIT_INFORMATION_CELL:
             ws[cell].font = Font(name='Arial', size=10, bold=True)
         else:
             ws[cell].font = Font(name='Arial', size=10)
     
     # 추가 정렬작업
-    col_center =[f'G{start_row + 1}',f'C{start_row+2}',f'E{start_row+1}',f'C{start_row+4}',f'D{start_row+4}',f'E{start_row+4}',f'F{start_row+4}',f'G{start_row+4}',f'F{start_row + 8+parameterColumCorrectionValue}',f'C{start_row+6+parameterColumCorrectionValue}',f'D{start_row+6+parameterColumCorrectionValue}',f'F{start_row+6+parameterColumCorrectionValue}']
+    col_center =[ASIL_INPUT_CELL,PROTOTYPE_INPUT_CELL,UNIT_NAME_INPUT_CELL,READ_WIRTE_INPUT_CELL,RETURN_VALUE_DATA_TYPE_INPUT_CELL,
+                 POSSIBLE_RETURN_VALUE_INPUT_CELL,RETURN_VALUE_DESCRIPTION_INPUT_CELL]
+    
     for cell in col_center:
         ws[cell].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
  
     #표 테두리 작업
     side = Side(style="thin", color="000000")
     border = Border(left=side, right=side, top=side, bottom=side)
-    for rows in ws.iter_rows(min_row=start_row, max_row=start_row+parameterColumCorrectionValue + 12, min_col=2, max_col=7):
+    for rows in ws.iter_rows(min_row=TABLE_START_ROW, max_row=TABLE_START_ROW+PARAMETER_CORRECTION_COLUM_ROW + 12, min_col=2, max_col=7):
         for cell in rows:
             cell.border = border
 
@@ -906,7 +1055,7 @@ def main(file_path, output_file_name,isJavafile,deepParsing):
                             start_row = 2 + count_ADS * 8 +  startColumCorrectionValue_ADS+count_ADS_Class
                             saveParameter = toCharParamter(prototype=prototype)
                             parameterColumCorrectionValue=len(saveParameter)-1  
-                            create_table_ADS(ws_ADS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                            create_table_ADS(ws_ADS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue,sepcialCase=specialCase)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
                             count_ADS += 1
                             startColumCorrectionValue_ADS+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게 
 
