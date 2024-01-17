@@ -1074,7 +1074,7 @@ def get_html_file_path(output_file_name,file_end_name,curentTime):
     else:
        return f'{file_path}/HTML_{file_end_name}_{curentTime}'
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
-    1,2,3
+    1,2
 
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
