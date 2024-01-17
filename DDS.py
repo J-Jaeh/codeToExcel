@@ -1068,36 +1068,33 @@ def create_Cpp_Java_excel(html_file_path,file_path,output_file_name,curentTime):
     wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
 
     print("패키지함수 갯수 "+str(packageCount))
-
+def get_html_file_path(output_file_name,file_end_name,curentTime):
+    if "\\" in output_file_name or "/" in output_file_name:
+       return f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
+    else:
+       return f'{file_path}/HTML_{file_end_name}_{curentTime}'
 def create_C_execl(table_texts,titles,file_path,output_file_name,curentTime):
     1,2,3,4
+
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
+    java_file="1"
+    cpp_file="2"
+    c_file="3"
 
     create_html_file(file_path,fileIdentifier,deepParsing,output_file_name)
 
     print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
 
     file_end_name=getFileNameInDrectory(output_file_name=file_path) 
-    html_file_path=''
-    if "\\" in output_file_name or "/" in output_file_name:
-        html_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
-    else:
-        html_file_path =f'{file_path}/HTML_{file_end_name}_{curentTime}'
-
-
-    if fileIdentifier in ["1","2"]:
+    html_file_path=get_html_file_path(output_file_name=output_file_name,file_end_name=file_end_name,curentTime=curentTime)
+    
+    if fileIdentifier in [java_file,cpp_file]:
         create_Cpp_Java_excel(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
-    elif fileIdentifier in ["3"]:
+    elif fileIdentifier in [c_file]:
         create_C_execl()
+
     os.system("pause")
-
-    # print(len(table_texts))
-    # print(len(titles))
-    # print(len(source_files))
-
-    # for index in range(0,len(titles)):
-    #     print(f"\n{titles[index]}         vs        "+f'{source_files[index]}\n')
-
+    
 while(True):
     if __name__ == "__main__":
         curentTime =datetime.datetime.now().strftime("%Y.%m.%d_%Hh.%Mm.%Ss")
