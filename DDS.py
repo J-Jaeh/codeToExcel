@@ -843,18 +843,19 @@ def set_write_permission(file_path):
     except OSError as e:
         print(f"파일 권한 변경 실패: {e}")
 
-def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
+def create_html_file(dir_path,fileIdentifier,deepParsing,output_file_name):
     try:
-            isJavafileYesOrNo=''
-            isCppFileYesOrNo=''
-            if isJavafile.lower() in ["y","yes"]:
-                isJavafileYesOrNo = "YES"
-                isCppFileYesOrNo="NO"
-            elif isJavafile.lower() in ["n","no"]:
-                isJavafileYesOrNo = "NO"
-                isCppFileYesOrNo="YES"
-            else:
-                raise Exception("Y or N 중에 하나만 입력해 주세요") 
+            isJava="NO"
+            isCpp='NO'
+            isC="NO"
+            if fileIdentifier.lower() in ["1"]:
+                isJava = "YES"
+            elif fileIdentifier.lower() in ["2"]:
+                isCpp="YES"
+            elif fileIdentifier.lower() in ["3"]:
+                isC="YES"
+            else:    
+                raise Exception("1 or 2 or 3 중에 하나만 입력해 주세요-create_html_file") 
     except Exception as e:
         print(e)
     try:          
@@ -904,12 +905,15 @@ def create_html_file(dir_path,isJavafile,deepParsing,output_file_name):
 
     # JAVA 파일이라면 
     config['OPTIMIZE_OUTPUT_JAVA'] = {}
-    config['OPTIMIZE_OUTPUT_JAVA']['OPTIMIZE_OUTPUT_JAVA'] = isJavafileYesOrNo
+    config['OPTIMIZE_OUTPUT_JAVA']['OPTIMIZE_OUTPUT_JAVA'] = isJava
     # CPP 파일일 경우 
     config['CPP_CLI_SUPPORT'] = {}
-    config['CPP_CLI_SUPPORT']['CPP_CLI_SUPPORT'] = isCppFileYesOrNo
-
+    config['CPP_CLI_SUPPORT']['CPP_CLI_SUPPORT'] = isCpp
+    # C 파일인경우
+    config['OPTIMIZE_OUTPUT_FOR_C'] = {}
+    config['OPTIMIZE_OUTPUT_FOR_C']['OPTIMIZE_OUTPUT_FOR_C'] = isC
     # INPUT 경로 즉 .. 소스파일이 위치하는 경로인데 컴포먼트별로 입력 받도록 해야할듯
+
     config['INPUT'] = {}
     config['INPUT']['INPUT'] = dir_path
 
@@ -962,9 +966,9 @@ def isSameCalss(class1,class2):
    else:
        return False 
 
-def main(file_path, output_file_name,isJavafile,deepParsing):
+def main(file_path, output_file_name,fileIdentifier,deepParsing):
 
-    create_html_file(file_path,isJavafile,deepParsing,output_file_name)
+    create_html_file(file_path,fileIdentifier,deepParsing,output_file_name)
 
     print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
 
@@ -1103,10 +1107,10 @@ while(True):
 
         countIsJavaInputTry = 0
         while(True):
-            print("자바파일 인가요?(Y/N)")
-            isJavafile=input()
+            print("★ 파일종류를 숫자로 선택해주세요 ★ \n\n 1.Java 파일 \n 2.Cpp 파일 \n 3.C 파일 \n (예시→자바 파일이라면  1 을 입력)")
+            fileIdentifier=input()
             try:
-                if isJavafile.lower() in ["y", "n","yes","no"]:
+                if fileIdentifier.lower() in ["1", "2","3"]:
                     break
                 elif countIsJavaInputTry==5:
                     print("사용법을 숙지하시고 다시 시도하시길 바랍니다.")
@@ -1116,7 +1120,7 @@ while(True):
                     os.system("pause")
                     sys.exit(1)                     
                 else:    
-                    raise Exception("\n\nY or N 을 입력해주세요")        
+                    raise Exception("\n\n 1 or 2 or 3 을 입력해주세요")        
             except Exception as e:
                 countIsJavaInputTry+=1
                 print(e)    
@@ -1141,7 +1145,7 @@ while(True):
                 countDeepParsingInputTry+=1
                 print(e)
             
-        main(file_path, output_file_name,isJavafile,deepParsing)
+        main(file_path, output_file_name,fileIdentifier,deepParsing)
 
         print("작업을 계속해서 하시겠습니까?(Y/N)")
 
