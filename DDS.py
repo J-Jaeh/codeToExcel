@@ -966,35 +966,7 @@ def isSameCalss(class1,class2):
    else:
        return False 
 
-def main(file_path, output_file_name,fileIdentifier,deepParsing):
-
-    create_html_file(file_path,fileIdentifier,deepParsing,output_file_name)
-
-    print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
-
-    table_texts = []
-    titles = []
-    source_files=[]
-    file_end_name=getFileNameInDrectory(output_file_name=file_path) 
-    html_file_path=''
-    if "\\" in output_file_name or "/" in output_file_name:
-        html_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
-    else:
-        html_file_path =f'{file_path}/HTML_{file_end_name}_{curentTime}'
-
-    for (root,directories,files) in os.walk(html_file_path):
-        for file in files:
-            if '.html' in file:
-                html_file_path = os.path.join(root, file) 
-                tables = find_tables_with_methods(html_file_path)
-                title_text = find_title_text(html_file_path)
-                source_file = find_source_file(html_file_path)
-                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
-                    table_texts.append([table.get_text() for table in tables])
-                    titles.append(title_text)
-                    source_files.append(source_file)  
-
-    # 새 워크북 생성 및 활성 시트 선택
+def create_Cpp_Java_excel(table_texts,titles,source_files,file_path,output_file_name,curentTime):
     wb = Workbook()
     wb_ADS = Workbook()
      
@@ -1082,6 +1054,37 @@ def main(file_path, output_file_name,fileIdentifier,deepParsing):
     wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
 
     print("패키지함수 갯수 "+str(packageCount))
+
+def main(file_path, output_file_name,fileIdentifier,deepParsing):
+
+    create_html_file(file_path,fileIdentifier,deepParsing,output_file_name)
+
+    print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
+
+    table_texts = []
+    titles = []
+    source_files=[]
+    file_end_name=getFileNameInDrectory(output_file_name=file_path) 
+    html_file_path=''
+    if "\\" in output_file_name or "/" in output_file_name:
+        html_file_path =f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
+    else:
+        html_file_path =f'{file_path}/HTML_{file_end_name}_{curentTime}'
+
+    for (root,directories,files) in os.walk(html_file_path):
+        for file in files:
+            if '.html' in file:
+                html_file_path = os.path.join(root, file) 
+                tables = find_tables_with_methods(html_file_path)
+                title_text = find_title_text(html_file_path)
+                source_file = find_source_file(html_file_path)
+                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
+                    table_texts.append([table.get_text() for table in tables])
+                    titles.append(title_text)
+                    source_files.append(source_file)  
+
+    create_Cpp_Java_excel(table_texts=table_texts,titles=titles,source_files=source_files,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
+   
     os.system("pause")
 
     # print(len(table_texts))
