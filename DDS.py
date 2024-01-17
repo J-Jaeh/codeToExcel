@@ -966,7 +966,21 @@ def isSameCalss(class1,class2):
    else:
        return False 
 
-def create_Cpp_Java_excel(table_texts,titles,source_files,file_path,output_file_name,curentTime):
+def create_Cpp_Java_excel(html_file_path,file_path,output_file_name,curentTime):
+    table_texts = []
+    titles = []
+    source_files=[]
+    for (root,directories,files) in os.walk(html_file_path):
+        for file in files:
+            if '.html' in file:
+                html_file_path = os.path.join(root, file) 
+                tables = find_tables_with_methods(html_file_path)
+                title_text = find_title_text(html_file_path)
+                source_file = find_source_file(html_file_path)
+                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
+                    table_texts.append([table.get_text() for table in tables])
+                    titles.append(title_text)
+                    source_files.append(source_file)  
     wb = Workbook()
     wb_ADS = Workbook()
      
@@ -1055,15 +1069,14 @@ def create_Cpp_Java_excel(table_texts,titles,source_files,file_path,output_file_
 
     print("패키지함수 갯수 "+str(packageCount))
 
+def create_C_execl(table_texts,titles,file_path,output_file_name,curentTime):
+    1,2,3,4
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
 
     create_html_file(file_path,fileIdentifier,deepParsing,output_file_name)
 
     print("\n\n*******************엑셀파일이 생성될 때까지 기다려주세요*******************\n\n")
 
-    table_texts = []
-    titles = []
-    source_files=[]
     file_end_name=getFileNameInDrectory(output_file_name=file_path) 
     html_file_path=''
     if "\\" in output_file_name or "/" in output_file_name:
@@ -1071,20 +1084,11 @@ def main(file_path, output_file_name,fileIdentifier,deepParsing):
     else:
         html_file_path =f'{file_path}/HTML_{file_end_name}_{curentTime}'
 
-    for (root,directories,files) in os.walk(html_file_path):
-        for file in files:
-            if '.html' in file:
-                html_file_path = os.path.join(root, file) 
-                tables = find_tables_with_methods(html_file_path)
-                title_text = find_title_text(html_file_path)
-                source_file = find_source_file(html_file_path)
-                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
-                    table_texts.append([table.get_text() for table in tables])
-                    titles.append(title_text)
-                    source_files.append(source_file)  
 
-    create_Cpp_Java_excel(table_texts=table_texts,titles=titles,source_files=source_files,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
-   
+    if fileIdentifier in ["1","2"]:
+        create_Cpp_Java_excel(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
+    elif fileIdentifier in ["3"]:
+        create_C_execl()
     os.system("pause")
 
     # print(len(table_texts))
