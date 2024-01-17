@@ -1068,16 +1068,34 @@ def create_Cpp_Java_excel(html_file_path,file_path,output_file_name,curentTime):
     wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
 
     print("패키지함수 갯수 "+str(packageCount))
+
 def get_html_file_path(output_file_name,file_end_name,curentTime):
     if "\\" in output_file_name or "/" in output_file_name:
        return f'{output_file_name}/HTML_{file_end_name}_{curentTime}'
     else:
        return f'{file_path}/HTML_{file_end_name}_{curentTime}'
+
+def find_tables_with_methods_for_C(file_path):
+    #이곳에 넘어오는 건 하나의 html 파일...
+    # .c면 DDS에 {키,벨류} 리턴
+    # .h면 ADS에 {키,벨류} 리턴?
+    # 일단 파싱 방법은 id ="func-members" 가 포함된 테이블의 모든 문자를 슈슉~  
+    table_texts_ADS={}
+    table_texts_DDS={}
+    with open(file_path, 'r', encoding='utf-8') as file:
+        html_content = file.read()
+    soup = BeautifulSoup(html_content, 'html.parser')
+
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
     #파일 이름이 Key, 파일안에 함수들이 Value
     #ADS 는 .h 파일  DDS는 .c파일  
-    table_texts_ADS={}
-    table_texts_DDS={}
+
+
+    for (root,directories,files) in os.walk(html_file_path):
+        for file in files:
+            ## 이부분에서 좀더 필터링을해서 .C 와 .h 파일을 구분해보자.
+            if '.html'  in file:
+                parsing_html_file_path = os.path.join(root, file) 
 
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
