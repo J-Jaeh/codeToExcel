@@ -973,10 +973,10 @@ def create_Cpp_Java_excel(html_file_path,file_path,output_file_name,curentTime):
     for (root,directories,files) in os.walk(html_file_path):
         for file in files:
             if '.html' in file:
-                html_file_path = os.path.join(root, file) 
-                tables = find_tables_with_methods(html_file_path)
-                title_text = find_title_text(html_file_path)
-                source_file = find_source_file(html_file_path)
+                parsing_html_file_path = os.path.join(root, file) 
+                tables = find_tables_with_methods(parsing_html_file_path)
+                title_text = find_title_text(parsing_html_file_path)
+                source_file = find_source_file(parsing_html_file_path)
                 if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
                     table_texts.append([table.get_text() for table in tables])
                     titles.append(title_text)
@@ -1074,7 +1074,10 @@ def get_html_file_path(output_file_name,file_end_name,curentTime):
     else:
        return f'{file_path}/HTML_{file_end_name}_{curentTime}'
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
-    1,2
+    #파일 이름이 Key, 파일안에 함수들이 Value
+    #ADS 는 .h 파일  DDS는 .c파일  
+    table_texts_ADS={}
+    table_texts_DDS={}
 
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
