@@ -815,6 +815,12 @@ def create_class_name(ws,className,checkInterfaceClass):
             innerClassName=checkName+" :: "+realClassName
             ws.append({'A':innerClassName})  
 
+def create_class_name_for_C(ws,className):
+    ws.append([None])
+    dividedClassName =className.split(".")
+    realClassName=dividedClassName[0]
+    ws.append({'A':realClassName})
+
 def getFileNameInDrectory(output_file_name):
     if "\\" in output_file_name or "/" in output_file_name:
         if "\\" in output_file_name:          
@@ -1077,25 +1083,94 @@ def get_html_file_path(output_file_name,file_end_name,curentTime):
 
 def find_tables_with_methods_for_C(file_path):
     #이곳에 넘어오는 건 하나의 html 파일...
-    # .c면 DDS에 {키,벨류} 리턴
-    # .h면 ADS에 {키,벨류} 리턴?
-    # 일단 파싱 방법은 id ="func-members" 가 포함된 테이블의 모든 문자를 슈슉~  
-    table_texts_ADS={}
-    table_texts_DDS={}
+    # .c면 DDS에 {키,벨류} 리턴 -> 나중에 생각
+    # .h면 ADS에 {키,벨류} 리턴? -> 나중에 생각
+    # 일단 파싱 방법은 id ="func-members" 가 포함된 부모 테이블의 모든 문자를 슈슉~ 
+    #table_texts_ADS={}
+    #table_texts_DDS={}
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
     soup = BeautifulSoup(html_content, 'html.parser')
+    tables = soup.find_all('table')
+    a_tags = [table.find('a', {'id': lambda x: x and 'func-members' in x}) for table in tables]
+    # Filter out None values (a_tags that don't meet the condition)
+    filtered_tables = [table for table, a_tag in zip(tables, a_tags) if a_tag]
+
+    return filtered_tables
+
 
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
-    #파일 이름이 Key, 파일안에 함수들이 Value
+    #파일 이름이 Key, 파일안에 함수들이 Value -> 추후에 나중에 적용
     #ADS 는 .h 파일  DDS는 .c파일  
-
-
+    table_texts = []
+    titles = []
     for (root,directories,files) in os.walk(html_file_path):
         for file in files:
             ## 이부분에서 좀더 필터링을해서 .C 와 .h 파일을 구분해보자.
-            if '.html'  in file:
+            # 일단 C 파일만 파싱해서 하는식으로 
+            if '_8c.html'  in file:
                 parsing_html_file_path = os.path.join(root, file) 
+                print("parsing_html_file_path : "+parsing_html_file_path)
+                tables =find_tables_with_methods_for_C(parsing_html_file_path)
+                print("tables")
+                print(tables)
+                title_text =find_title_text(parsing_html_file_path)
+                print("title")
+                print(title_text)
+                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
+                    table_texts.append([table.get_text() for table in tables])
+                    titles.append(title_text)
+    wb_DDS = Workbook()
+    # wb_ADS = Workbook()
+
+    count = 0
+    count_ADS =0
+    count_ADS_Class=0
+    startColumCorrectionValue = 0
+    startColumCorrectionValue_ADS =0
+    countClassName = 0
+
+    packageCount=0   # 패키지 함수 카운트하는거 얼마나 많은 종류가 있나일단 확인 ;; 
+    ws_DDS = wb_DDS.active
+   # ws_ADS = wb_ADS.active
+    for data in table_texts:
+        className = titles[countClassName]
+        create_class_name_for_C(ws_DDS,className=className)
+        countClassName += 1
+        print("-datalist-")
+        print(data)
+        for splitData in data:
+                specialCase=False
+                for creTable in splitData.split("\n"):
+                    creTable = creTable.strip()  # 앞뒤 공백 제거
+                    creTable = creTable.strip().replace('\xa0', ' ') # 짜증나는 녀석 제거
+                    print("cretable : "+creTable)
+
+                    if not creTable or "함수" in creTable:  
+                        print("cretable not")
+                        continue
+                    
+                    checkInterfaceClass="C does not have interfaces"
+                    prototype = creTable 
+                    start_row = 2 + count * 14 +  startColumCorrectionValue+countClassName
+                    saveParameter = toCharParamter(prototype=prototype)
+                    parameterColumCorrectionValue=len(saveParameter)-1  
+                    create_table_DDS(ws_DDS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue
+                                        ,className=className,checkInterfaceName=checkInterfaceClass,sepcialCase=specialCase)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                    count += 1
+                    startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
+    print("================================= DDS 클래스 총 갯수(inner포함): "+str(len(titles))+"     =================================")
+    print("================================= DDS 테이블 생성 갯수 : "+str(count)+"     =================================")
+    print("\n================================= ADS 클래스 총 갯수 : "+str(count_ADS_Class)+"     =================================")    
+    print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
+    print("                                    made by antony                                         ")
+
+    file_end_name=getFileNameInDrectory(file_path) 
+    wb_DDS.save(f'{output_file_name}/{file_end_name}_DDS_{curentTime}.xlsx')
+   # wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
+
+    print("패키지함수 갯수 "+str(packageCount))                    
+
 
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
@@ -1112,6 +1187,7 @@ def main(file_path, output_file_name,fileIdentifier,deepParsing):
     if fileIdentifier in [java_file,cpp_file]:
         create_Cpp_Java_excel(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
     elif fileIdentifier in [c_file]:
+        print("fileIdentifier for C")
         create_C_execl(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
 
     os.system("pause")
@@ -1183,7 +1259,8 @@ while(True):
             else:
                 print("똑바로 입력하세요\n\n작업을 계속해서 하시겠습니까?(Y/N)")
                 continue
-        if isContinue in ["y","yes"]:
+
+        if isContinue.lower in ["y","yes"]:
             continue
         else:
             break
