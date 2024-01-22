@@ -1097,8 +1097,7 @@ def find_tables_with_methods_for_C(file_path):
     filtered_tables = [table for table, a_tag in zip(tables, a_tags) if a_tag]
 
     return filtered_tables
-def find_title_text_for_C(file_path):
-    1234
+
 
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
     #파일 이름이 Key, 파일안에 함수들이 Value -> 추후에 나중에 적용
@@ -1111,14 +1110,19 @@ def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
             # 일단 C 파일만 파싱해서 하는식으로 
             if '_8c.html'  in file:
                 parsing_html_file_path = os.path.join(root, file) 
+                print("parsing_html_file_path : "+parsing_html_file_path)
                 tables =find_tables_with_methods_for_C(parsing_html_file_path)
-                title_text =find_title_text_for_C(parsing_html_file_path)
+                print("tables")
+                print(tables)
+                title_text =find_title_text(parsing_html_file_path)
+                print("title")
+                print(title_text)
                 if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
                     table_texts.append([table.get_text() for table in tables])
                     titles.append(title_text)
     wb_DDS = Workbook()
     # wb_ADS = Workbook()
-     
+
     count = 0
     count_ADS =0
     count_ADS_Class=0
@@ -1132,8 +1136,42 @@ def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
     for data in table_texts:
         className = titles[countClassName]
         create_class_name_for_C(ws_DDS,className=className)
+        countClassName += 1
+        print("-datalist-")
+        print(data)
+        for splitData in data:
+                specialCase=False
+                for creTable in splitData.split("\n"):
+                    creTable = creTable.strip()  # 앞뒤 공백 제거
+                    creTable = creTable.strip().replace('\xa0', ' ') # 짜증나는 녀석 제거
+                    print("cretable : "+creTable)
 
-        
+                    if not creTable or "함수" in creTable:  
+                        print("cretable not")
+                        continue
+                    
+                    checkInterfaceClass="C does not have interfaces"
+                    prototype = creTable 
+                    start_row = 2 + count * 14 +  startColumCorrectionValue+countClassName
+                    saveParameter = toCharParamter(prototype=prototype)
+                    parameterColumCorrectionValue=len(saveParameter)-1  
+                    create_table_DDS(ws_DDS, start_row=start_row, prototype=prototype,parameterColumCorrectionValue=parameterColumCorrectionValue
+                                        ,className=className,checkInterfaceName=checkInterfaceClass,sepcialCase=specialCase)#보정값2이 들어감 들어간 보정값은 prameter 이후의 셀들에 더해지고)
+                    count += 1
+                    startColumCorrectionValue+=parameterColumCorrectionValue #보정값2을 더해줌 들어간 보정값1에.. start_rowdpeh 적용 될수 있게
+    print("================================= DDS 클래스 총 갯수(inner포함): "+str(len(titles))+"     =================================")
+    print("================================= DDS 테이블 생성 갯수 : "+str(count)+"     =================================")
+    print("\n================================= ADS 클래스 총 갯수 : "+str(count_ADS_Class)+"     =================================")    
+    print("================================= ADS 테이블 생성 갯수 : "+str(count_ADS)+"     =================================")
+    print("                                    made by antony                                         ")
+
+    file_end_name=getFileNameInDrectory(file_path) 
+    wb_DDS.save(f'{output_file_name}/{file_end_name}_DDS_{curentTime}.xlsx')
+   # wb_ADS.save(f'{output_file_name}/{file_end_name}_ADS_{curentTime}.xlsx')
+
+    print("패키지함수 갯수 "+str(packageCount))                    
+
+
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
     cpp_file="2"
@@ -1149,6 +1187,7 @@ def main(file_path, output_file_name,fileIdentifier,deepParsing):
     if fileIdentifier in [java_file,cpp_file]:
         create_Cpp_Java_excel(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
     elif fileIdentifier in [c_file]:
+        print("fileIdentifier for C")
         create_C_execl(html_file_path=html_file_path,file_path=file_path,output_file_name=output_file_name,curentTime=curentTime)
 
     os.system("pause")
@@ -1220,7 +1259,8 @@ while(True):
             else:
                 print("똑바로 입력하세요\n\n작업을 계속해서 하시겠습니까?(Y/N)")
                 continue
-        if isContinue in ["y","yes"]:
+
+        if isContinue.lower in ["y","yes"]:
             continue
         else:
             break
