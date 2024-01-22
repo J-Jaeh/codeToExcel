@@ -1077,25 +1077,36 @@ def get_html_file_path(output_file_name,file_end_name,curentTime):
 
 def find_tables_with_methods_for_C(file_path):
     #이곳에 넘어오는 건 하나의 html 파일...
-    # .c면 DDS에 {키,벨류} 리턴
-    # .h면 ADS에 {키,벨류} 리턴?
-    # 일단 파싱 방법은 id ="func-members" 가 포함된 테이블의 모든 문자를 슈슉~  
+    # .c면 DDS에 {키,벨류} 리턴 -> 나중에 생각
+    # .h면 ADS에 {키,벨류} 리턴? -> 나중에 생각
+    # 일단 파싱 방법은 id ="func-members" 가 포함된 부모 테이블의 모든 문자를 슈슉~ 
     table_texts_ADS={}
     table_texts_DDS={}
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
     soup = BeautifulSoup(html_content, 'html.parser')
+    tables = soup.find_all('table')
+    a_tags = [table.find('a', {'id': lambda x: x and 'func-members' in x}) for table in tables]
+    # Filter out None values (a_tags that don't meet the condition)
+    filtered_tables = [table for table, a_tag in zip(tables, a_tags) if a_tag]
+
+    return filtered_tables
+def find_title_text_for_C(file_path):
+    1234
 
 def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
-    #파일 이름이 Key, 파일안에 함수들이 Value
+    #파일 이름이 Key, 파일안에 함수들이 Value -> 추후에 나중에 적용
     #ADS 는 .h 파일  DDS는 .c파일  
-
-
+    table_texts = []
+    titles = []
     for (root,directories,files) in os.walk(html_file_path):
         for file in files:
             ## 이부분에서 좀더 필터링을해서 .C 와 .h 파일을 구분해보자.
             if '.html'  in file:
                 parsing_html_file_path = os.path.join(root, file) 
+                tables =find_tables_with_methods_for_C(parsing_html_file_path)
+                titles =find_title_text_for_C(parsing_html_file_path)
+
 
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
