@@ -815,6 +815,12 @@ def create_class_name(ws,className,checkInterfaceClass):
             innerClassName=checkName+" :: "+realClassName
             ws.append({'A':innerClassName})  
 
+def create_class_name_for_C(ws,className):
+    ws.append([None])
+    dividedClassName =className.split(".")
+    realClassName=dividedClassName[0]
+    ws.append({'A':realClassName})
+
 def getFileNameInDrectory(output_file_name):
     if "\\" in output_file_name or "/" in output_file_name:
         if "\\" in output_file_name:          
@@ -1102,12 +1108,32 @@ def create_C_execl(html_file_path,file_path,output_file_name,curentTime):
     for (root,directories,files) in os.walk(html_file_path):
         for file in files:
             ## 이부분에서 좀더 필터링을해서 .C 와 .h 파일을 구분해보자.
-            if '.html'  in file:
+            # 일단 C 파일만 파싱해서 하는식으로 
+            if '_8c.html'  in file:
                 parsing_html_file_path = os.path.join(root, file) 
                 tables =find_tables_with_methods_for_C(parsing_html_file_path)
-                titles =find_title_text_for_C(parsing_html_file_path)
+                title_text =find_title_text_for_C(parsing_html_file_path)
+                if tables and title_text: # -mothod 테이블이 없으면 그 파일은 append 안됨 !
+                    table_texts.append([table.get_text() for table in tables])
+                    titles.append(title_text)
+    wb_DDS = Workbook()
+    # wb_ADS = Workbook()
+     
+    count = 0
+    count_ADS =0
+    count_ADS_Class=0
+    startColumCorrectionValue = 0
+    startColumCorrectionValue_ADS =0
+    countClassName = 0
 
+    packageCount=0   # 패키지 함수 카운트하는거 얼마나 많은 종류가 있나일단 확인 ;; 
+    ws_DDS = wb_DDS.active
+   # ws_ADS = wb_ADS.active
+    for data in table_texts:
+        className = titles[countClassName]
+        create_class_name_for_C(ws_DDS,className=className)
 
+        
 def main(file_path, output_file_name,fileIdentifier,deepParsing):
     java_file="1"
     cpp_file="2"
