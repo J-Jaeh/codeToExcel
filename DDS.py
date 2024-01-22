@@ -1080,8 +1080,8 @@ def find_tables_with_methods_for_C(file_path):
     # .c면 DDS에 {키,벨류} 리턴 -> 나중에 생각
     # .h면 ADS에 {키,벨류} 리턴? -> 나중에 생각
     # 일단 파싱 방법은 id ="func-members" 가 포함된 부모 테이블의 모든 문자를 슈슉~ 
-    table_texts_ADS={}
-    table_texts_DDS={}
+    #table_texts_ADS={}
+    #table_texts_DDS={}
     with open(file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
     soup = BeautifulSoup(html_content, 'html.parser')
