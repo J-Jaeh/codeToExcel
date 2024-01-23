@@ -335,15 +335,17 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
             ws[f'F{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)        
     else :
         for param in parameterList:
-            if not param:
+            if not param or "(void)" in param:
                 ws[f'C{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'D{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'E{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'F{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'G{PARAMETER_INPUT_ROW}'] ='-'
+                ## 서식설정
                 ws[f'C{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
                 ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
-                ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)                
+                ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
+                ws[f'G{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)                 
             elif len(parameterList) ==1:
                 parameter = allParameterValue.split(' ')
                 dataType=''
@@ -352,6 +354,7 @@ def create_table_DDS(ws, start_row,prototype,parameterColumCorrectionValue,class
                 ws[f'C{PARAMETER_INPUT_ROW}'] = dataType.strip()  # 파라미터 데이터 타입
                 ws[f'D{PARAMETER_INPUT_ROW}'] = parameter[len(parameter)-1] # 파라미터 이름
                 ws[f'F{PARAMETER_INPUT_ROW}'] = "IN"
+                ## 서식설정
                 ws[f'C{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
                 ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
                 ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
@@ -1344,14 +1347,17 @@ def create_table_DDS_for_description(ws, start_row,prototype,parameterColumCorre
             ws[f'F{addParameterRow}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)        
     else :
         for param in parameterList:
-            if not param:
+            if not param or "void" in param:
                 ws[f'C{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'D{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'E{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'F{PARAMETER_INPUT_ROW}'] ='-'
                 ws[f'G{PARAMETER_INPUT_ROW}'] ='-'
+                ## 서식
                 ws[f'C{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)    
-                ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True) 
+                ws[f'D{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
+                ws[f'E{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)  
+                ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
                 ws[f'F{PARAMETER_INPUT_ROW}'].alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)                
             elif len(parameterList) ==1:
                 parameter = allParameterValue.split(' ')
